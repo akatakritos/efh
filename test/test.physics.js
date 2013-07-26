@@ -92,7 +92,7 @@ describe('Vectors', function() {
 		});
 	});
 
-	xdescribe('addition', function(){
+	describe('addition', function(){
 		describe( 'adding the zero vector', function() {
 			it ('changes nothing', function() {
 				var v = new EFH.Vector({magnitude: 4, direction: 3});
@@ -105,6 +105,7 @@ describe('Vectors', function() {
 		describe( 'adding to itself', function() {
 			var v = new EFH.Vector({magnitude: 1, direction: 3});
 			var result = v.add(v);
+
 			it('should be twice the magnitude', function() {
 				assert.almostEqual(result.magnitude, v.magnitude*2);
 			});
@@ -113,9 +114,21 @@ describe('Vectors', function() {
 				assert.equal(result.direction, v.direction);
 			});
 		});
+
+		describe ( 'adding its opposite', function() {
+			var v = Factory.createVector(3, Math.PI/4);
+			var opposite = Factory.createVector(3, 5*Math.PI/4);
+
+			it('should be the zero vector', function(){
+				var result = v.add( opposite );
+				assert.equal(result.direction, 0);
+				assert.equal(result.magnitude, 0);
+			});
+
+		});
 	});
 
-	xdescribe('multiplication', function(){
+	describe('multiplication', function(){
 		var v = new EFH.Vector({magnitude: 4, direction: 1.5});
 		describe('multiply by zero', function() {
 			var result = v.mult(0);

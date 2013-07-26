@@ -22,14 +22,14 @@
 				direction: this.direction
 			});
 		}
-		var x = this.magnitude * Math.cos(this.direction) + that.magnitude * Math.cos(that.direction);
-		var y = this.magnitude * Math.sin(this.direction) + that.magnitude * Math.sin(that.direction);
+		var x = this.xComponent() + that.xComponent();
+		var y = this.yComponent() + that.yComponent();
 
-		var direction = Math.atan(y / x);
-		var magnitude = Math.sqrt(x * x + y * y);
+		var dir = Math.atan2(y, x);
+		var magnitude = Math.sqrt((x * x) + (y * y));
 		return new Vector({
 			magnitude: magnitude,
-			direction : direction
+			direction : dir
 		}).standardize();
 	};
 
@@ -66,7 +66,9 @@
 			direction += delta;
 		}
 
-		return new Vector({magnitude: magnitude, direction:direction});
+		var result = new Vector({magnitude: magnitude, direction:direction});
+		result.nonstandard = this;
+		return result;
 	};
 
 	var PointCharge = function(options) {
@@ -89,7 +91,7 @@
 			var dy = pointCharge.y - onObj.y;
 			var r  = Math.sqrt(dx*dx + dy*dy);
 
-			var dir = Math.atan(dy / dx);
+			var dir = Math.atan2(dy, dx);
 
 			var magnitude = K * onObj.charge * pointCharge.charge / (r * r);
 			if (magnitude < 0) {
