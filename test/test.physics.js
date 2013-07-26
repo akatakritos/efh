@@ -9,8 +9,90 @@ assert.almostEqual = function(a, b, epsilon, message) {
 	assert( Math.abs(a-b) < epsilon, message);
 };
 
+var Factory = {
+	createVector: function(magnitude, direction) {
+		return new EFH.Vector({magnitude: magnitude, direction: direction});
+	}
+}
+
 describe('Vectors', function() {
-	describe('addition', function(){
+	describe('standardize', function(){
+		describe('general cases', function(){
+			describe('normal vector', function() {
+				var v = new EFH.Vector({magnitude: 1, direction: Math.PI/4});
+				var result = v.standardize();
+				it('should be the same', function(){
+					assert.equal(result.direction, v.direction);
+					assert.equal(result.magnitude, v.magnitude);
+				});
+			});
+
+			describe('large angle, positive magnitude', function(){
+				var v = Factory.createVector(1, 5*Math.PI/2);
+				var result = v.standardize();
+
+				it('should have same magnitude', function(){
+					assert.equal(result.magnitude, v.magnitude);
+				});
+
+				it ('should have an angle between 0 and 2pi', function() {
+					assert(result.direction >= 0 && result.direction <= 2*Math.PI);
+				});
+
+			});
+
+			describe('negative direction, positive magnitude', function(){
+				var v = Factory.createVector(1, -Math.PI);
+				var result = v.standardize();
+
+				it('should have the same magnitude', function() {
+					assert.equal(result.magnitude, v.magnitude);
+				});
+
+				it ('should have a positive direction between 0 and 2pi', function() {
+					assert(result.direction >= 0 && result.direction <= 2*Math.PI);
+				});
+			});
+
+			describe('negative direction, negative magnitude', function(){
+				var v = Factory.createVector(-Math.PI/2, -1);
+				var result = v.standardize();
+
+				it('should have a positive direction', function() {
+					assert( result.direction >= 0 && result.direction <= 2*Math.PI);
+				});
+
+				it ('should have a positive magnitude', function() {
+					assert( result.magnitude >= 0 );
+				});
+			});
+		});
+
+		describe('specific cases', function() {
+			var tests = [
+				{input: Factory.createVector(1,0), expected: Factory.createVector(1,0) },
+				{input: Factory.createVector(0,0), expected: Factory.createVector(0,0) },
+				{input: Factory.createVector(-1,0), expected: Factory.createVector(1,Math.PI) },
+				{input: Factory.createVector(1,-Math.PI), expected: Factory.createVector(1,Math.PI) },
+				{input: Factory.createVector(-1,-Math.PI), expected: Factory.createVector(1,0) }
+			];
+
+			for( var i = 0; i < tests.length; i++) {
+				var input = tests[i].input;
+				var expected = tests[i].expected;
+
+				describe('' + input, function() {
+					it('should become ' + expected, function() {
+						var result = input.standardize();
+						assert.equal(result.magnitude, expected.magnitude);
+						assert.equal(result.direction, expected.direction);
+					});
+				});
+			}
+		});
+	});
+
+	xdescribe('addition', function(){
 		describe( 'adding the zero vector', function() {
 			it ('changes nothing', function() {
 				var v = new EFH.Vector({magnitude: 4, direction: 3});
@@ -33,7 +115,7 @@ describe('Vectors', function() {
 		});
 	});
 
-	describe('multiplication', function(){
+	xdescribe('multiplication', function(){
 		var v = new EFH.Vector({magnitude: 4, direction: 1.5});
 		describe('multiply by zero', function() {
 			var result = v.mult(0);

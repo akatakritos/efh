@@ -24,22 +24,20 @@
 		}
 		var x = this.magnitude * Math.cos(this.direction) + that.magnitude * Math.cos(that.direction);
 		var y = this.magnitude * Math.sin(this.direction) + that.magnitude * Math.sin(that.direction);
+
 		var direction = Math.atan(y / x);
-		if (x < 0) {
-			direction += Math.PI;
-		}
 		var magnitude = Math.sqrt(x * x + y * y);
 		return new Vector({
 			magnitude: magnitude,
 			direction : direction
-		});
+		}).standardize();
 	};
 
 	Vector.prototype.mult = function (scalar) {
 		return new Vector({
 			magnitude: this.magnitude * scalar,
 			direction: this.direction
-		});
+		}).standardize();
 	};
 
 	Vector.prototype.xComponent = function() {
@@ -51,6 +49,25 @@
 	};
 
 	Vector.ZERO = new Vector({magnitude: 0, direction: 0});
+
+	Vector.prototype.standardize = function() {
+		var direction = this.direction;
+		var magnitude = this.magnitude;
+
+		//standardize magnitude to be positive
+		if( magnitude < 0 ) {
+			magnitude = Math.abs( magnitude );
+			direction += Math.PI;
+		}
+
+		//normalize direction to between 0 and 2pi
+		var delta = direction < 0 ? 2*Math.PI : (-2*Math.PI);
+		while (direction < 0 || direction > 2*Math.PI) {
+			direction += delta;
+		}
+
+		return new Vector({magnitude: magnitude, direction:direction});
+	};
 
 	var PointCharge = function(options) {
 
