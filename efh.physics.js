@@ -1,4 +1,4 @@
-(function(){
+(function(window){
 	var EFH = window.EFH || {}; //namespace
 
 	var K = 500000; //force constant
@@ -110,4 +110,4 @@
 	if ( ! window.EFH ) {
 		window.EFH = EFH;
 	}
-})();
+})(typeof(window) === 'undefined' ? global : window);

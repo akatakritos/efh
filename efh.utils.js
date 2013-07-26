@@ -1,4 +1,4 @@
-(function() {
+(function(window) {
 	var EFH = window.EFH || {};
 
 	var Utils = {};
@@ -17,4 +17,4 @@
 	if ( ! window.EFH) {
 		window.EFH = EFH;
 	}
-})()
+})(typeof(window) === 'undefined' ? global : window);
