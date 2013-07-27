@@ -12,7 +12,7 @@
 	};
 
 	Vector.prototype.toString = function() {
-		return "Vector: " + this.magnitude + " @ " + this.direction;
+		return "Vector: " + this.magnitude.toFixed(2) + " @ " + (180*this.direction/Math.PI).toFixed(2);
 	};
 
 	Vector.prototype.add = function( that ) {
@@ -80,34 +80,35 @@
 		EFH.Utils.merge(this, options);
 	};
 
+	PointCharge.prototype.calcForceAgainst = function(otherCharge) {
+		var dx = otherCharge.x - this.x;
+		var dy = otherCharge.y - this.y;
+		var r  = Math.sqrt(dx*dx + dy*dy);
+
+		var dir = Math.atan2(dy, dx);
+
+		var magnitude = K * this.charge * otherCharge.charge / (r * r);
+
+		if ( magnitude == Number.POSITIVE_INFINITY) {
+			magnitude = Number.MAX_VALUE;
+		}
+
+		return new Vector({magnitude: magnitude, direction: dir}).standardize();
+	};
+
 	var Physics = {};
 	Physics.calcForce = function(onObj, pointCharges) {
 		if (pointCharges.length === 0) {
 			return Vector.ZERO;
 		}
-		var force = new Vector();
+
 		return pointCharges.map(function( pointCharge ){
-			var dx = pointCharge.x - onObj.x;
-			var dy = pointCharge.y - onObj.y;
-			var r  = Math.sqrt(dx*dx + dy*dy);
 
-			var dir = Math.atan2(dy, dx);
-
-			var magnitude = K * onObj.charge * pointCharge.charge / (r * r);
-			if (magnitude < 0) {
-				magnitude = Math.abs(magnitude);
-				dir += Math.PI;
-			}
-
-			if ( magnitude == Number.POSITIVE_INFINITY) {
-				magnitude = Number.MAX_VALUE;
-			}
-
-			return new Vector({magnitude: magnitude, direction: dir});
+			return pointCharge.calcForceAgainst( onObj );
 
 		}).reduce(function(accumulator, v, i, arr) {
 			return accumulator.add(v);
-		}, force);
+		}, Vector.ZERO).standardize();
 	};
 
 	Physics.calcPosition = function(p, v, a, t) {

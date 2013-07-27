@@ -12,6 +12,9 @@ assert.almostEqual = function(a, b, epsilon, message) {
 var Factory = {
 	createVector: function(magnitude, direction) {
 		return new EFH.Vector({magnitude: magnitude, direction: direction});
+	},
+	createCharge: function(x, y, charge) {
+		return new EFH.PointCharge({x:x, y:y, charge: charge});
 	}
 }
 
@@ -175,6 +178,64 @@ describe('Vectors', function() {
 			it('should have the opposite direction', function(){
 				assert.equal(result.direction, v.direction + Math.PI);
 			});
+		});
+	});
+});
+
+describe('force calculation', function(){
+	describe('opposites attract', function() {
+		var o = Factory.createCharge(0, 0, 1);
+		var e = Factory.createCharge(1, 0, -1);
+		var n = Factory.createCharge(0, 1, -1);
+		var w = Factory.createCharge(-1, 0, -1);
+		var s = Factory.createCharge(0, -1, -1);
+
+		it('o vs e should be to the left', function() {
+			var result = o.calcForceAgainst( e );
+			assert.equal(result.direction, Math.PI);
+		});
+
+		it('o vs n should be down', function() {
+			var result = o.calcForceAgainst( n );
+			assert.equal(result.direction, 3*Math.PI/2);
+		});
+
+		it('o vs w should be to the right', function() {
+			var result = o.calcForceAgainst( w );
+			assert.equal(result.direction, 2*Math.PI);
+		});
+
+		it('o vs s should be up', function() {
+			var result = o.calcForceAgainst( s );
+			assert.equal(result.direction, Math.PI/2);
+		});
+	});
+
+	describe('like charges repel', function() {
+		var o = Factory.createCharge(0, 0, 1);
+		var e = Factory.createCharge(1, 0, 1);
+		var n = Factory.createCharge(0, 1, 1);
+		var w = Factory.createCharge(-1, 0, 1);
+		var s = Factory.createCharge(0, -1, 1);
+
+		it('o vs e should be to the right', function() {
+			var result = o.calcForceAgainst( e );
+			assert.equal(result.direction, 0);
+		});
+
+		it('o vs n should be up', function() {
+			var result = o.calcForceAgainst( n );
+			assert.equal(result.direction, Math.PI/2);
+		});
+
+		it('o vs w should be to the left', function() {
+			var result = o.calcForceAgainst( w );
+			assert.equal(result.direction, Math.PI);
+		});
+
+		it('o vs s should be down', function() {
+			var result = o.calcForceAgainst( s );
+			assert.equal(result.direction, 3*Math.PI/2);
 		});
 	});
 });

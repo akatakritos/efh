@@ -97,7 +97,7 @@
 			}
 		}
 
-		this.debug("FPS: " + frame.frameRate + "\nForce: " + force.toString() + "\nPosition: (" + newPosition.x + "," + newPosition.y + ")");
+		this.debug("FPS: " + frame.frameRate + "\nForce: " + force.toString() + "\nPosition: (" + newPosition.x.toFixed(2) + "," + newPosition.y.toFixed(2) + ")");
 	};
 
 	Simulation.prototype.isCollision = function() {
