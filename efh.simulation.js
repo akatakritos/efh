@@ -52,7 +52,9 @@
 		this.options = {
 			container : "efh-simulation",
 			width : 100,
-			height: 100
+			height: 100,
+			initialPositives : 3,
+			initialNegatives : 3
 		};
 
 		EFH.Utils.merge(this.options, options);
@@ -65,9 +67,9 @@
 		EFH.Utils.merge(this.options.puck, options.puck);
 
 		this.options.playingField = {
-			x : 0,
+			x : 100,
 			y : 0,
-			width: this.options.width,
+			width: this.options.width-100,
 			height: this.options.height
 		};
 		EFH.Utils.merge(this.options.playingField, options.playingField);
@@ -130,10 +132,10 @@
 
 	Simulation.prototype.isOffScreen = function() {
 		var x = this.puck.shape.getX(), y = this.puck.shape.getY()
-		return (x > this.options.width) ||
-			(x < 0) ||
-			(y > this.options.height) ||
-			(y < 0);
+		return (x > this.options.playingField.x + this.options.playingField.width) ||
+			(x < this.options.playingField.x) ||
+			(y > this.options.playingField.y + this.options.playingField.heightt) ||
+			(y < this.options.playingField.y);
 	};
 
 	Simulation.prototype.init = function() {
@@ -189,11 +191,26 @@
 			strokeWidth: 2
 		});
 
+		this.addInitialCharges();
+
 		this.layer.add( border );
 		this.layer.add( this.txt );
 		this.layer.add( this.goal );
 		this.layer.draw();
 	};
+
+	Simulation.prototype.addInitialCharges = function() {
+		var x = 25, y = 25
+		for (var i = 0; i < this.options.initialPositives; i++) {
+			this.addCharge(x, y, 1);
+			y+=20;
+		}
+
+		for (var i = 0; i < this.options.initialNegatives; i++) {
+			this.addCharge(x, y, -1);
+			y+=20;
+		}
+	}
 
 	Simulation.prototype.start = function() {
 		this.anim.start();
@@ -212,6 +229,10 @@
 		this.charges.push(dragCharge.charge);
 		this.layer.add(dragCharge.shape);
 		this.layer.draw();
+	};
+
+	Simulation.prototype.addToPlayingField = function(drawCharge) {
+		this.charges.push(dragCharge.charge);
 	};
 
 	Simulation.prototype.reset = function() {
