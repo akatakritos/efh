@@ -42,7 +42,6 @@
 
 	var Simulation = function(options) {
 		this.charges = [];
-		this.collisionObjects = [];
 		this.stage = null;
 		this.layer = null;
 		this.anim = null;
@@ -64,6 +63,14 @@
 		};
 
 		EFH.Utils.merge(this.options.puck, options.puck);
+
+		this.options.playingField = {
+			x : 0,
+			y : 0,
+			width: this.options.width,
+			height: this.options.height
+		};
+		EFH.Utils.merge(this.options.playingField, options.playingField);
 
 		this.init();
 	};
@@ -147,8 +154,8 @@
 		this.layer.add(this.puck.shape);
 
 		this.goal = new Kinetic.Rect({
-			x: this.options.width - 25,
-			y: this.options.height / 2 - 50,
+			x: this.options.playingField.x + this.options.playingField.width - 25,
+			y: this.options.playingField.y + this.options.playingField.height / 2 - 50,
 			width: 25,
 			height: 100,
 			fill: 'green'
@@ -162,6 +169,27 @@
 			fontFamily: 'Calibri',
 			fill: 'green'
 		});
+
+		// var border = new Kinetic.Rect({
+		// 	x: this.options.playingField.x,
+		// 	y : this.options.playingField.y,
+		// 	width: this.options.playingField.width,
+		// 	height: this.options.playingField.height,
+		// 	fill: null,
+		// 	stroke: 'black',
+		// 	strokeWidth: 2
+		// });
+		var bx = this.options.playingField.x,
+			by = this.options.playingField.y,
+			bw = this.options.playingField.width,
+			bh = this.options.playingField.height;
+		var border = new Kinetic.Line({
+			points: [bx, by, bx + bw, by, bx + bw, by + bh, bx, by + bh, bx, by],
+			stroke: 'black',
+			strokeWidth: 2
+		});
+
+		this.layer.add( border );
 		this.layer.add( this.txt );
 		this.layer.add( this.goal );
 		this.layer.draw();
@@ -183,7 +211,6 @@
 		var dragCharge = new DragCharge(x, y, charge);
 		this.charges.push(dragCharge.charge);
 		this.layer.add(dragCharge.shape);
-		this.collisionObjects.push(dragCharge.shape);
 		this.layer.draw();
 	};
 

@@ -1,7 +1,7 @@
 (function(window){
 	var EFH = window.EFH || {}; //namespace
 
-	var K = 500000; //force constant
+	var K = 1000000; //force constant
 
 	var Vector = function(options) {
 		//defaults
