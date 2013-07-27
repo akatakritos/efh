@@ -2,6 +2,7 @@
 	var EFH = window.EFH || {};
 
 	var DragCharge = function(x, y, chargeValue) {
+		var self = this;
 		var charge = new EFH.PointCharge({x:x, y:y, charge: chargeValue});
 		var shape = new Kinetic.Circle({
 			x: x,
@@ -17,6 +18,10 @@
 		shape.on("dragend", function() {
 			charge.x = this.getX();
 			charge.y = this.getY();
+
+			if ( typeof(self.onDragEnd) === 'function' ) {
+				self.onDragEnd();
+			}
 		});
 
 		this.charge = charge;
@@ -130,8 +135,10 @@
 		return false;
 	};
 
-	Simulation.prototype.isOffScreen = function() {
-		var x = this.puck.shape.getX(), y = this.puck.shape.getY()
+	Simulation.prototype.isOffScreen = function(x, y) {
+		if (typeof x === 'undefined') {
+			x = this.puck.shape.getX(), y = this.puck.shape.getY();
+		}
 		return (x > this.options.playingField.x + this.options.playingField.width) ||
 			(x < this.options.playingField.x) ||
 			(y > this.options.playingField.y + this.options.playingField.heightt) ||
@@ -226,12 +233,19 @@
 
 	Simulation.prototype.addCharge = function(x, y, charge) {
 		var dragCharge = new DragCharge(x, y, charge);
-		this.charges.push(dragCharge.charge);
+		//this.charges.push(dragCharge.charge);
 		this.layer.add(dragCharge.shape);
 		this.layer.draw();
+
+		var self = this;
+		dragCharge.onDragEnd = function() {
+			if (! self.isOffScreen(this.shape.getX(), this.shape.getY())) {
+				self.addToPlayingField(this);
+			}
+		}
 	};
 
-	Simulation.prototype.addToPlayingField = function(drawCharge) {
+	Simulation.prototype.addToPlayingField = function(dragCharge) {
 		this.charges.push(dragCharge.charge);
 	};
 
