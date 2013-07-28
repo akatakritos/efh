@@ -1,4 +1,4 @@
-(function() {
+(function(window) {
 	var EFH = window.EFH || {};
 
 	var DragCharge = function(x, y, chargeValue) {
@@ -261,4 +261,4 @@
 		window.EFH = EFH;
 	}
 
-})();
+})( typeof window === 'undefined' ? global : window);
