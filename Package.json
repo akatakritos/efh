@@ -1,0 +1,13 @@
+{
+  "name": "EFH",
+  "description": "Electric Field Hockey",
+  "author": "Matt Burke <burkemd1+github@gmail.com",
+  "version" : "0.1.0",
+  "dependencies": {
+    "grunt" : "*",
+    "grunt-contrib-concat":"*",
+    "grunt-contrib-jshint":"*",
+    "grunt-contrib-uglify":"*",
+    "grunt-contrib-watch":"*"
+  }
+}
