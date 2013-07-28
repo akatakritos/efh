@@ -9,6 +9,7 @@ module.exports = function(grunt){
 				src: [
 					'src/intro.js',
 					'src/efh.utils.js',
+					'src/vector.js',
 					'src/efh.physics.js',
 					'src/efh.simulation.js',
 					'src/outro.js'
@@ -39,9 +40,18 @@ module.exports = function(grunt){
 				}
 			}
 		},
+		mochaTest: {
+			test: {
+				options: {
+					reporter: 'spec',
+					growl : true
+				},
+				src: ['test/**/*.js']
+			}
+		},
 		watch: {
 			files: ['<%= jshint.files %>'],
-			tasks: ['concat']
+			tasks: ['concat', 'mochaTest']
 			}
 		});
 
@@ -49,6 +59,7 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-mocha-test');
 
-	grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+	grunt.registerTask('default', ['jshint', 'concat', 'mochaTest', 'uglify']);
 };
