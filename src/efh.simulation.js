@@ -40,7 +40,7 @@
 		this.charge.x = x;
 		this.charge.y = y;
 		this.shape.setPosition(x, y);
-	}
+	};
 
 	var Simulation = function(options) {
 		this.charges = [];
@@ -85,7 +85,7 @@
 
 	Simulation.prototype.tick = function(frame) {
 		var ts = frame.timeDiff / 1000;
-		if (ts == 0) {
+		if (ts === 0) {
 			return;
 		}
 		var puck = this.puck;
@@ -134,7 +134,8 @@
 
 	Simulation.prototype.isOffScreen = function(x, y) {
 		if (typeof x === 'undefined') {
-			x = this.puck.shape.getX(), y = this.puck.shape.getY();
+			x = this.puck.shape.getX();
+			y = this.puck.shape.getY();
 		}
 		return (x > this.options.playingField.x + this.options.playingField.width) ||
 			(x < this.options.playingField.x) ||
@@ -176,15 +177,6 @@
 			fill: 'green'
 		});
 
-		// var border = new Kinetic.Rect({
-		// 	x: this.options.playingField.x,
-		// 	y : this.options.playingField.y,
-		// 	width: this.options.playingField.width,
-		// 	height: this.options.playingField.height,
-		// 	fill: null,
-		// 	stroke: 'black',
-		// 	strokeWidth: 2
-		// });
 		var bx = this.options.playingField.x,
 			by = this.options.playingField.y,
 			bw = this.options.playingField.width,
@@ -204,17 +196,17 @@
 	};
 
 	Simulation.prototype.addInitialCharges = function() {
-		var x = 25, y = 25
+		var x = 25, y = 25;
 		for (var i = 0; i < this.options.initialPositives; i++) {
 			this.addCharge(x, y, 1);
 			y+=20;
 		}
 
-		for (var i = 0; i < this.options.initialNegatives; i++) {
+		for (i = 0; i < this.options.initialNegatives; i++) {
 			this.addCharge(x, y, -1);
 			y+=20;
 		}
-	}
+	};
 
 	Simulation.prototype.start = function() {
 		this.anim.start();
@@ -225,7 +217,11 @@
 	};
 
 	Simulation.prototype.toggle = function() {
-		this.anim.isRunning() ? this.anim.stop() : this.anim.start();
+		if(this.anim.isRunning()) {
+			this.anim.stop();
+		} else {
+			this.anim.start();
+		}
 	};
 
 	Simulation.prototype.addCharge = function(x, y, charge) {
@@ -239,7 +235,7 @@
 			if (! self.isOffScreen(this.shape.getX(), this.shape.getY())) {
 				self.addToPlayingField(this);
 			}
-		}
+		};
 	};
 
 	Simulation.prototype.addToPlayingField = function(dragCharge) {
@@ -250,6 +246,6 @@
 		this.puck.moveTo(this.options.puck.x, this.options.puck.y);
 		this.puck.velocity = EFH.Vector.ZERO;
 		this.layer.draw();
-	}
+	};
 
 	EFH.Simulation = Simulation;

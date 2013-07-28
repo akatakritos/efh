@@ -10,6 +10,7 @@ module.exports = function(grunt){
 					'src/intro.js',
 					'src/efh.utils.js',
 					'src/vector.js',
+					'src/pointcharge.js',
 					'src/efh.physics.js',
 					'src/efh.simulation.js',
 					'src/outro.js'
@@ -30,14 +31,15 @@ module.exports = function(grunt){
 		},
 
 		jshint: {
-			files: ['gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+			files: ['gruntfile.js', 'src/**/*.js'],
 			options: {
 				// options here to override JSHint defaults
 				globals: {
 					console: true,
 					module: true,
 					document: true
-				}
+				},
+				ignores: ['src/intro.js', 'src/outro.js']
 			}
 		},
 		mochaTest: {
@@ -62,4 +64,5 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-mocha-test');
 
 	grunt.registerTask('default', ['jshint', 'concat', 'mochaTest', 'uglify']);
+	grunt.registerTask('test', ['jshint', 'concat', 'mochaTest']);
 };

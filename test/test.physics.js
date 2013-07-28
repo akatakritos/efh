@@ -1,5 +1,5 @@
 var assert = require('assert');
-require('../dist/efh.js')
+require('../dist/efh.js');
 
 assert.almostEqual = function(a, b, epsilon, message) {
 	if (typeof epsilon === 'undefined') {
@@ -15,7 +15,7 @@ var Factory = {
 	createCharge: function(x, y, charge) {
 		return new EFH.PointCharge({x:x, y:y, charge: charge});
 	}
-}
+};
 
 describe('Vectors', function() {
 	describe('standardize', function(){
