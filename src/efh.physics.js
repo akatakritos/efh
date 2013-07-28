@@ -1,6 +1,3 @@
-(function(window){
-	var EFH = window.EFH || {}; //namespace
-
 	var K = 1000000; //force constant
 
 	var Vector = function(options) {
@@ -8,7 +5,7 @@
 		this.magnitude = 0;
 		this.direction = 0;
 
-		EFH.Utils.merge(this, options);
+		merge(this, options);
 	};
 
 	Vector.prototype.toString = function() {
@@ -77,7 +74,7 @@
 		this.y = 0;
 		this.charge = 1;
 
-		EFH.Utils.merge(this, options);
+		merge(this, options);
 	};
 
 	PointCharge.prototype.calcForceAgainst = function(otherCharge) {
@@ -126,8 +123,3 @@
 	EFH.PointCharge = PointCharge;
 	EFH.Physics = Physics;
 	EFH.Physics.K = K;
-
-	if ( ! window.EFH ) {
-		window.EFH = EFH;
-	}
-})(typeof(window) === 'undefined' ? global : window);

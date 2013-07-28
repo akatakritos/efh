@@ -1,6 +1,3 @@
-(function(window) {
-	var EFH = window.EFH || {};
-
 	var DragCharge = function(x, y, chargeValue) {
 		var self = this;
 		var charge = new EFH.PointCharge({x:x, y:y, charge: chargeValue});
@@ -62,14 +59,14 @@
 			initialNegatives : 3
 		};
 
-		EFH.Utils.merge(this.options, options);
+		merge(this.options, options);
 
 		this.options.puck = {
 			x : 0,
 			y: 0
 		};
 
-		EFH.Utils.merge(this.options.puck, options.puck);
+		merge(this.options.puck, options.puck);
 
 		this.options.playingField = {
 			x : 100,
@@ -77,7 +74,7 @@
 			width: this.options.width-100,
 			height: this.options.height
 		};
-		EFH.Utils.merge(this.options.playingField, options.playingField);
+		merge(this.options.playingField, options.playingField);
 
 		this.init();
 	};
@@ -256,9 +253,3 @@
 	}
 
 	EFH.Simulation = Simulation;
-
-	if ( ! window.EFH ) {
-		window.EFH = EFH;
-	}
-
-})( typeof window === 'undefined' ? global : window);
