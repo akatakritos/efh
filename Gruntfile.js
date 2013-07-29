@@ -14,6 +14,7 @@ module.exports = function(grunt){
 					'src/puck.js',
 					'src/dragcharge.js',
 					'src/efh.physics.js',
+					'src/map.js',
 					'src/efh.simulation.js',
 					'src/outro.js'
 				],

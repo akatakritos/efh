@@ -13,6 +13,25 @@
 
 		<script type='text/javascript'>
 
+			var sampleLevel = {
+				"name": "Level Name",
+				"width" : 800,
+				"height" : 450,
+				"goal" : {
+					"x": 775,
+					"y": 175,
+					"width": 25,
+					"height": 100
+				},
+				"backgroundUrl": "img/bg-1.png",
+				"puckPosition" : {
+					"x" : 100,
+					"y": 100
+				},
+				"fixedCharges": [],
+				"startingCharges" : [1,-1,1,-1,1,-1]
+			};
+
 			var sim = new EFH.Simulation({
 				container: 'playground',
 				width: 900,
@@ -22,7 +41,7 @@
 					y: 150
 				},
 				mapURL : "img/bg-1.png"
-			});
+			}).init( sampleLevel );
 
 			// sim.addCharge(25, 25, 1);
 			// sim.addCharge(150, 75, 1);

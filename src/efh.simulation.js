@@ -4,36 +4,15 @@
 		this.layer = null;
 		this.anim = null;
 		this.puck = null;
-		this.goal = null;
+		self.map = null;
 		this.txt = null;
 
 		this.options = {
 			container : "efh-simulation",
-			width : 100,
-			height: 100,
-			initialPositives : 3,
-			initialNegatives : 3,
-			mapURL : null
 		};
 
 		merge(this.options, options);
 
-		this.options.puck = {
-			x : 0,
-			y: 0
-		};
-
-		merge(this.options.puck, options.puck);
-
-		this.options.playingField = {
-			x : 100,
-			y : 0,
-			width: this.options.width-100,
-			height: this.options.height
-		};
-		merge(this.options.playingField, options.playingField);
-
-		this.init();
 	};
 
 	Simulation.prototype.debug = function(text) {
@@ -94,94 +73,90 @@
 			x = this.puck.shape.getX();
 			y = this.puck.shape.getY();
 		}
-		return (x > this.options.playingField.x + this.options.playingField.width) ||
-			(x < this.options.playingField.x) ||
-			(y > this.options.playingField.y + this.options.playingField.heightt) ||
-			(y < this.options.playingField.y);
+		return (x > this.map.x+100 + this.map.width) ||
+			(x < this.map.x) ||
+			(y > this.map.y + this.map.height) ||
+			(y < this.map.y);
 	};
 
-	Simulation.prototype.init = function() {
-		this.stage = new Kinetic.Stage( {
-			width: this.options.width,
-			height: this.options.height,
-			container: this.options.container
-		});
-		this.layer = new Kinetic.Layer();
-		this.stage.add(this.layer);
+	Simulation.prototype.init = function( mapSource ) {
 		var self = this;
+		Level.load( mapSource, function(map) {
 
-		this.anim = new Kinetic.Animation(function(frame) {
-			self.tick( frame );
-		}, this.layer);
+			self.stage = new Kinetic.Stage( {
+				width: map.width + 100,
+				height: map.height,
+				container: self.options.container
+			});
+			self.layer = new Kinetic.Layer();
+			self.stage.add(self.layer);
 
-		this.puck = new Puck(this.options.puck.x, this.options.puck.y);
-		this.layer.add(this.puck.shape);
+			self.anim = new Kinetic.Animation(function(frame) {
+				self.tick( frame );
+			}, self.layer);
 
-		this.goal = new Kinetic.Rect({
-			x: this.options.playingField.x + this.options.playingField.width - 25,
-			y: this.options.playingField.y + this.options.playingField.height / 2 - 50,
-			width: 25,
-			height: 100,
-			fill: 'green'
-		});
+			self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
+			self.layer.add(self.puck.shape);
 
-		this.txt = new Kinetic.Text({
-			x: this.stage.getWidth() - 200,
-			y: 15,
-			text: '',
-			fontSize: 10,
-			fontFamily: 'Calibri',
-			fill: 'green'
-		});
+			self.goal = new Kinetic.Rect({
+				x: map.goal.x + 100,
+				y: map.goal.y,
+				width: map.goal.width,
+				height: map.goal.height,
+				fill: 'green'
+			});
 
-		var bx = this.options.playingField.x,
-			by = this.options.playingField.y,
-			bw = this.options.playingField.width,
-			bh = this.options.playingField.height;
-		var border = new Kinetic.Line({
-			points: [bx, by, bx + bw, by, bx + bw, by + bh, bx, by + bh, bx, by],
-			stroke: 'black',
-			strokeWidth: 2
-		});
+			self.txt = new Kinetic.Text({
+				x: self.stage.getWidth() - 200,
+				y: 15,
+				text: '',
+				fontSize: 10,
+				fontFamily: 'Calibri',
+				fill: 'green'
+			});
 
-		this.addInitialCharges();
+			var bx = 100,
+				by = 0,
+				bw = map.width,
+				bh = map.height;
+			var border = new Kinetic.Line({
+				points: [bx, by, bx + bw, by, bx + bw, by + bh, bx, by + bh, bx, by],
+				stroke: 'black',
+				strokeWidth: 2
+			});
 
-		this.layer.add( border );
-		this.layer.add( this.txt );
-		this.layer.add( this.goal );
-		this.layer.draw();
+			self.addInitialCharges(map.startingCharges);
 
-		if (this.options.mapURL) {
-			var img = new Image();
-			img.onload = function() {
+			self.layer.add( border );
+			self.layer.add( self.txt );
+			self.layer.add( self.goal );
+			self.layer.draw();
+
+			if (map.background.image) {
 				var bg = new Kinetic.Image({
-					image: img,
+					image: map.background.image,
 					x: bx, y: by,
 					width: bw, height: bh
 				});
 
+				self.layer.add( bg );
 				bg.moveToBottom();
 
-				self.layer.add( bg );
 				bg.createImageHitRegion(function() {
 					self.layer.draw();
 				});
-			};
+			}
 
-			//Actually load the image
-			img.src = this.options.mapURL;
-		}
+			self.map = map;
+		});
+
+		return self;
 	};
 
-	Simulation.prototype.addInitialCharges = function() {
+	Simulation.prototype.addInitialCharges = function( initialCharges ) {
 		var x = 25, y = 25;
-		for (var i = 0; i < this.options.initialPositives; i++) {
-			this.addCharge(x, y, 1);
-			y+=20;
-		}
-
-		for (i = 0; i < this.options.initialNegatives; i++) {
-			this.addCharge(x, y, -1);
+		for (var i = 0; i < initialCharges.length; i++) {
+			this.addCharge(x, y, initialCharges[i]);
 			y+=20;
 		}
 	};
@@ -230,7 +205,7 @@
 	};
 
 	Simulation.prototype.reset = function() {
-		this.puck.moveTo(this.options.puck.x, this.options.puck.y);
+		this.puck.moveTo(100 + this.map.puckPosition.x, this.map.puckPosition.y);
 		this.puck.velocity = EFH.Vector.ZERO;
 		this.layer.draw();
 	};

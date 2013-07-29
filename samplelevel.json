@@ -1,0 +1,18 @@
+{
+	"name": "Level Name",
+	"width" : 800,
+	"height" : 450,
+	"goal" : {
+		"x": 100,
+		"y": 200,
+		"width": 25,
+		"height": 100
+	},
+	"backgroundUrl": "img/bg-1.png",
+	"puckPosition" : {
+		"x" : 100,
+		"y": 100
+	},
+	"fixedCharges": [],
+	"startingCharges" : [1,-1,1,-1,1,-1]
+}
