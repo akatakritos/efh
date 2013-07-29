@@ -12,7 +12,8 @@
 			width : 100,
 			height: 100,
 			initialPositives : 3,
-			initialNegatives : 3
+			initialNegatives : 3,
+			mapURL : null
 		};
 
 		merge(this.options, options);
@@ -149,6 +150,27 @@
 		this.layer.add( this.txt );
 		this.layer.add( this.goal );
 		this.layer.draw();
+
+		if (this.options.mapURL) {
+			var img = new Image();
+			img.onload = function() {
+				var bg = new Kinetic.Image({
+					image: img,
+					x: bx, y: by,
+					width: bw, height: bh
+				});
+
+				bg.moveToBottom();
+
+				self.layer.add( bg );
+				bg.createImageHitRegion(function() {
+					self.layer.draw();
+				});
+			};
+
+			//Actually load the image
+			img.src = this.options.mapURL;
+		}
 	};
 
 	Simulation.prototype.addInitialCharges = function() {

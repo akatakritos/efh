@@ -21,6 +21,10 @@ var DragCharge = function(x, y, chargeValue) {
 		}
 	});
 
+	shape.on("mousedown touchstart", function() {
+		shape.moveToTop();
+	});
+
 	this.charge = charge;
 	this.shape = shape;
 };
