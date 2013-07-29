@@ -210,4 +210,8 @@
 		this.layer.draw();
 	};
 
+	Simulation.prototype.serialize = function() {
+		return this.stage.toJSON();
+	};
+
 	EFH.Simulation = Simulation;
