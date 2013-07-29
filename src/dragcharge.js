@@ -12,8 +12,8 @@ var DragCharge = function(x, y, chargeValue) {
 	shape.createImageHitRegion();
 
 	shape.on("dragend", function() {
-		charge.x = this.getX();
-		charge.y = this.getY();
+		charge.x = this.getX() + 20;
+		charge.y = this.getY() + 20;
 
 		if ( typeof(self.onDragEnd) === 'function' ) {
 			self.onDragEnd();
