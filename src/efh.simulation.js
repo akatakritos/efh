@@ -50,9 +50,9 @@
 	Simulation.prototype.isCollision = function() {
 		var pointsToCheck = 8;
 		var angle = 0;
-		var r = this.puck.shape.getRadius() + 1; //plus buffer so it doesnt collide with itself
-		var cx = this.puck.shape.getX();
-		var cy = this.puck.shape.getY();
+		var r = this.puck.getRadius() + 1; //plus buffer so it doesnt collide with itself
+		var cx = this.puck.getX();
+		var cy = this.puck.getY();
 		for ( var i = 0; i < pointsToCheck; i++) {
 			var x = cx + r * Math.cos(angle);
 			var y = cy + r * Math.sin(angle);
@@ -70,8 +70,8 @@
 
 	Simulation.prototype.isOffScreen = function(x, y) {
 		if (typeof x === 'undefined') {
-			x = this.puck.shape.getX();
-			y = this.puck.shape.getY();
+			x = this.puck.getX();
+			y = this.puck.getY();
 		}
 		return (x > this.map.x+100 + this.map.width) ||
 			(x < this.map.x) ||
@@ -185,7 +185,7 @@
 
 		var self = this;
 		dragCharge.onDragEnd = function() {
-			if (! self.isOffScreen(this.shape.getX(), this.shape.getY())) {
+			if (! self.isOffScreen(this.getX(), this.getY())) {
 				self.addToPlayingField(this);
 			} else {
 				self.removeFromPlayingField(this);
