@@ -11,6 +11,8 @@ module.exports = function(grunt){
 					'src/efh.utils.js',
 					'src/vector.js',
 					'src/pointcharge.js',
+					'src/puck.js',
+					'src/dragcharge.js',
 					'src/efh.physics.js',
 					'src/efh.simulation.js',
 					'src/outro.js'

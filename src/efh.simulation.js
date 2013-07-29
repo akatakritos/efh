@@ -1,47 +1,3 @@
-	var DragCharge = function(x, y, chargeValue) {
-		var self = this;
-		var charge = new EFH.PointCharge({x:x, y:y, charge: chargeValue});
-		var shape = new Kinetic.Circle({
-			x: x,
-			y: y,
-			radius: 20,
-			stroke: 'black',
-			fill: chargeValue >= 0 ? 'red' : 'blue',
-			strokeWidth: 1,
-			draggable: true,
-			name: "draggablepoint"
-		});
-
-		shape.on("dragend", function() {
-			charge.x = this.getX();
-			charge.y = this.getY();
-
-			if ( typeof(self.onDragEnd) === 'function' ) {
-				self.onDragEnd();
-			}
-		});
-
-		this.charge = charge;
-		this.shape = shape;
-	};
-
-	var Puck = function(x, y) {
-		this.charge = new EFH.PointCharge({x: x, y: y, charge: 1});
-		this.velocity = EFH.Vector.ZERO;
-		this.shape = new Kinetic.Circle({
-			x : x,
-			y : y,
-			radius: 20,
-			fill: 'black'
-		});
-	};
-
-	Puck.prototype.moveTo = function(x, y) {
-		this.charge.x = x;
-		this.charge.y = y;
-		this.shape.setPosition(x, y);
-	};
-
 	var Simulation = function(options) {
 		this.charges = [];
 		this.stage = null;
@@ -234,12 +190,21 @@
 		dragCharge.onDragEnd = function() {
 			if (! self.isOffScreen(this.shape.getX(), this.shape.getY())) {
 				self.addToPlayingField(this);
+			} else {
+				self.removeFromPlayingField(this);
 			}
 		};
 	};
 
 	Simulation.prototype.addToPlayingField = function(dragCharge) {
 		this.charges.push(dragCharge.charge);
+	};
+
+	Simulation.prototype.removeFromPlayingField = function(dragCharge) {
+		var index = this.charges.indexOf( dragCharge.charge );
+		if ( index > -1 ) {
+			this.charges.splice( index, 1 );
+		}
 	};
 
 	Simulation.prototype.reset = function() {
