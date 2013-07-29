@@ -65,3 +65,5 @@ Vector.prototype.standardize = function() {
 	result.nonstandard = this;
 	return result;
 };
+
+EFH.Vector = Vector;

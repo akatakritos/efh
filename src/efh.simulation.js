@@ -89,7 +89,7 @@
 			return;
 		}
 		var puck = this.puck;
-		var force = EFH.Physics.calcForce(puck.charge, this.charges);
+		var force = puck.charge.calcForceFrom( this.charges );
 		var newPosition = EFH.Physics.calcPosition(puck.charge, puck.velocity, force, ts);
 		puck.velocity = EFH.Physics.calcVelocity(puck.velocity, force, ts);
 

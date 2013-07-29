@@ -1,3 +1,5 @@
+var K = 1000000; //force constant
+
 var PointCharge = function(options) {
 
 	this.x = 0;
@@ -22,3 +24,21 @@ PointCharge.prototype.calcForceAgainst = function(otherCharge) {
 
 	return new Vector({magnitude: magnitude, direction: dir}).standardize();
 };
+
+PointCharge.prototype.calcForceFrom = function( pointCharges ) {
+	var onObj = this;
+		if (pointCharges.length === 0) {
+			return Vector.ZERO;
+		}
+
+		return pointCharges.map(function( pointCharge ){
+
+			return pointCharge.calcForceAgainst( onObj );
+
+		}).reduce(function(accumulator, v, i, arr) {
+			return accumulator.add(v);
+		}, Vector.ZERO).standardize();
+	};
+
+EFH.PointCharge = PointCharge;
+EFH.K = K;

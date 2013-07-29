@@ -237,4 +237,42 @@ describe('force calculation', function(){
 			assert.equal(result.direction, 3*Math.PI/2);
 		});
 	});
+
+	describe( 'when radius is zero', function() {
+		var c = Factory.createCharge(0,0,1);
+		var result = c.calcForceAgainst(c);
+		it('should have magnitude of max value', function() {
+			assert.equal(result.magnitude, Number.MAX_VALUE);
+		});
+
+	});
+
+	describe('multiple charges', function() {
+		describe('two coterminous charges', function(){
+			var subject = Factory.createCharge(0,0,1);
+			var coterminous = Factory.createCharge(1,0,1);
+			var charges = [coterminous, coterminous];
+
+			var single = coterminous.calcForceAgainst( subject );
+			var doubl  = subject.calcForceFrom( charges );
+
+			it('should be twice the magnitude', function(){
+
+				assert.equal(doubl.magnitude, single.magnitude*2);
+			});
+
+			it ('should be the same direction', function() {
+				assert.equal(doubl.direction, single.direction);
+			});
+		});
+
+		describe('two opposite direction charges', function() {
+			var subject = Factory.createCharge(0,0,1);
+			var charges = [Factory.createCharge(-1,0,1), Factory.createCharge(1,0,1)];
+			var result = subject.calcForceFrom( charges );
+			it('should be zero magnitude', function() {
+				assert.almostEqual(result.magnitude, 0);
+			});
+		});
+	});
 });
