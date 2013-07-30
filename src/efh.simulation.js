@@ -19,34 +19,6 @@
 		this.txt.setText(text);
 	};
 
-	Simulation.prototype.tick = function(frame) {
-		var ts = frame.timeDiff / 1000;
-		if (ts === 0) {
-			return;
-		}
-		var puck = this.puck;
-		var force = puck.charge.calcForceFrom( this.charges );
-		var newPosition = EFH.Physics.calcPosition(puck.charge, puck.velocity, force, ts);
-		puck.velocity = EFH.Physics.calcVelocity(puck.velocity, force, ts);
-
-		puck.moveTo(newPosition.x, newPosition.y);
-
-		if (this.isOffScreen()) {
-			this.stop();
-		}
-
-		var shape = this.isCollision();
-		if (shape !== false) {
-			console.log(shape);
-			this.stop();
-			if (shape == this.goal) {
-				alert("You win!");
-			}
-		}
-
-		this.debug("FPS: " + frame.frameRate + "\nForce: " + force.toString() + "\nPosition: (" + newPosition.x.toFixed(2) + "," + newPosition.y.toFixed(2) + ")");
-	};
-
 	Simulation.prototype.step = function( state, ds ) {
 		var dt = ds/1000;
 		if (dt === 0) {
