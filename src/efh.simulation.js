@@ -91,8 +91,16 @@
 			self.layer = new Kinetic.Layer();
 			self.stage.add(self.layer);
 
+			var accumulator = 0.0;
+			var simrate = 1000/60; //60fps
 			self.anim = new Kinetic.Animation(function(frame) {
-				self.tick( frame );
+				accumulator += frame.timeDiff;
+				while( accumulator >= simrate ) {
+					self.tick( { timeDiff: simrate, frameRate: frame.frameRate} );
+					accumulator -= simrate;
+				}
+
+				//render!
 			}, self.layer);
 
 			self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
