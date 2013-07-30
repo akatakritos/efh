@@ -47,12 +47,43 @@
 		this.debug("FPS: " + frame.frameRate + "\nForce: " + force.toString() + "\nPosition: (" + newPosition.x.toFixed(2) + "," + newPosition.y.toFixed(2) + ")");
 	};
 
-	Simulation.prototype.isCollision = function() {
+	Simulation.prototype.step = function( state, ds ) {
+		var dt = ds/1000;
+		if (dt === 0) {
+			return state;
+		}
+		var force = new PointCharge({x:state.position.x, y:state.position.y, charge: this.puck.charge.charge}).calcForceFrom( this.charges );
+		var position = Physics.calcPosition( state.position, state.velocity, force, dt);
+		var acceleration = force; //assume mass = 1
+		var velocity = Physics.calcVelocity( state.velocity, force, dt);
+		return {
+			position: position,
+			velocity: velocity,
+			acceleration: acceleration
+		};
+	};
+
+	Simulation.prototype.blend = function( previousState, currentState, alpha ) {
+		//currentState*alpha + previousState * ( 1.0 - alpha );
+		var previousPositionVector = Vector.fromComponent(previousState.position.x, previousState.position.y);
+		var currentPositionVector = Vector.fromComponent(currentState.position.x, currentState.position.y);
+		var blendedPositionVector = currentPositionVector.mult(alpha).add(previousPositionVector.mult(1-alpha));
+		return {
+			velocity: currentState.velocity, 
+			acceleration : currentState.acceleration, 
+			position: {
+				x: blendedPositionVector.xComponent(),
+				y: blendedPositionVector.yComponent()
+			}
+		};
+	};
+
+	Simulation.prototype.isCollision = function(x, y, radius) {
 		var pointsToCheck = 8;
 		var angle = 0;
-		var r = this.puck.getRadius() + 1; //plus buffer so it doesnt collide with itself
-		var cx = this.puck.getX();
-		var cy = this.puck.getY();
+		var r = radius + 1; //plus buffer so it doesnt collide with itself
+		var cx = x;
+		var cy = y;
 		for ( var i = 0; i < pointsToCheck; i++) {
 			var x = cx + r * Math.cos(angle);
 			var y = cy + r * Math.sin(angle);
@@ -91,19 +122,38 @@
 			self.layer = new Kinetic.Layer();
 			self.stage.add(self.layer);
 
+			self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
+
 			var accumulator = 0.0;
 			var simrate = 1000/60; //60fps
+			var currentState = {
+				position: {x: self.puck.getX(), y: self.puck.getY() },
+				velocity: self.puck.velocity,
+				acceleration: Vector.ZERO
+			};
+			var previousState = currentState;
 			self.anim = new Kinetic.Animation(function(frame) {
-				accumulator += frame.timeDiff;
+				if (frame.timeDiff === 0){
+					return;
+				}
+				var frameTime = frame.timeDiff > 250 ? 250 : frame.timeDiff;
+				accumulator += frameTime;
 				while( accumulator >= simrate ) {
-					self.tick( { timeDiff: simrate, frameRate: frame.frameRate} );
+					previousState = currentState;
+					currentState = self.step( currentState, simrate );
 					accumulator -= simrate;
 				}
 
+				var alpha = accumulator / frameTime;
+				var state = self.blend(previousState, currentState, alpha);
+
 				//render!
+				self.puck.velocity = state.velocity;
+				self.puck.moveTo( state.position.x, state.position.y );
+
 			}, self.layer);
 
-			self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
+			
 			self.layer.add(self.puck.shape);
 
 			self.goal = new Kinetic.Rect({

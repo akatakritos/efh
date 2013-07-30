@@ -66,4 +66,11 @@ Vector.prototype.standardize = function() {
 	return result;
 };
 
+Vector.fromComponent = function(x, y) {
+	return new Vector({
+		magnitude: Math.sqrt(x*x + y*y),
+		direction: Math.atan2(y, x)
+	}).standardize();
+};
+
 EFH.Vector = Vector;
