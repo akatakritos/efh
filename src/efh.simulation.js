@@ -85,9 +85,9 @@
 		var cx = x;
 		var cy = y;
 		for ( var i = 0; i < pointsToCheck; i++) {
-			var x = cx + r * Math.cos(angle);
-			var y = cy + r * Math.sin(angle);
-			var obj = this.stage.getIntersection(x, y);
+			var px = cx + r * Math.cos(angle);
+			var py = cy + r * Math.sin(angle);
+			var obj = this.stage.getIntersection(px, py);
 
 			if (obj && obj.shape && obj.shape !== this.puck.shape) {
 				return obj.shape;
@@ -142,14 +142,24 @@
 					previousState = currentState;
 					currentState = self.step( currentState, simrate );
 					accumulator -= simrate;
+
+					var object = self.isCollision(currentState.position.x, currentState.position.y, self.puck.getRadius());
+					if ( object ) {
+						self.render( currentState, frame.frameRate );
+						self.handleCollision( object );
+						return;
+					}
+
+					if (self.isOffScreen(currentState.position.x, currentState.position.y)) {
+						handleCollision( "screen" );
+					}
 				}
 
 				var alpha = accumulator / frameTime;
 				var state = self.blend(previousState, currentState, alpha);
 
 				//render!
-				self.puck.velocity = state.velocity;
-				self.puck.moveTo( state.position.x, state.position.y );
+				self.render( state, frame.frameRate );
 
 			}, self.layer);
 
@@ -209,6 +219,22 @@
 		});
 
 		return self;
+	};
+
+	Simulation.prototype.render = function( state, fps ) {
+		this.puck.velocity = state.velocity;
+		this.puck.moveTo( state.position.x, state.position.y );
+		this.debug("FPS: " + fps);
+	};
+
+	Simulation.prototype.handleCollision = function( shape ) {
+		this.stop();
+		if (shape !== false) {
+			console.log(shape);
+			if (shape == this.goal) {
+				alert("You win!");
+			}
+		}
 	};
 
 	Simulation.prototype.addInitialCharges = function( initialCharges ) {
