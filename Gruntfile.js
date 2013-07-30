@@ -15,7 +15,7 @@ module.exports = function(grunt){
 					'src/dragcharge.js',
 					'src/efh.physics.js',
 					'src/map.js',
-					'src/efh.simulation.js',
+					'src/simulation.js',
 					'src/outro.js'
 				],
 				dest: 'dist/efh.js'
