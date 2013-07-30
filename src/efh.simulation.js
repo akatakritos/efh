@@ -124,44 +124,8 @@
 
 			self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
 
-			var accumulator = 0.0;
-			var simrate = 1000/60; //60fps
-			var currentState = {
-				position: {x: self.puck.getX(), y: self.puck.getY() },
-				velocity: self.puck.velocity,
-				acceleration: Vector.ZERO
-			};
-			var previousState = currentState;
-			self.anim = new Kinetic.Animation(function(frame) {
-				if (frame.timeDiff === 0){
-					return;
-				}
-				var frameTime = frame.timeDiff > 250 ? 250 : frame.timeDiff;
-				accumulator += frameTime;
-				while( accumulator >= simrate ) {
-					previousState = currentState;
-					currentState = self.step( currentState, simrate );
-					accumulator -= simrate;
-
-					var object = self.isCollision(currentState.position.x, currentState.position.y, self.puck.getRadius());
-					if ( object ) {
-						self.render( currentState, frame.frameRate );
-						self.handleCollision( object );
-						return;
-					}
-
-					if (self.isOffScreen(currentState.position.x, currentState.position.y)) {
-						handleCollision( "screen" );
-					}
-				}
-
-				var alpha = accumulator / frameTime;
-				var state = self.blend(previousState, currentState, alpha);
-
-				//render!
-				self.render( state, frame.frameRate );
-
-			}, self.layer);
+			
+			self.anim = self.createAnimation();
 
 			
 			self.layer.add(self.puck.shape);
@@ -219,6 +183,48 @@
 		});
 
 		return self;
+	};
+
+	Simulation.prototype.createAnimation = function() {
+		var self = this;
+		var accumulator = 0.0;
+		var simrate = 1000/60; //60fps
+		var currentState = {
+			position: {x: self.puck.getX(), y: self.puck.getY() },
+			velocity: self.puck.velocity,
+			acceleration: Vector.ZERO
+		};
+		var previousState = currentState;
+		return new Kinetic.Animation(function(frame) {
+			if (frame.timeDiff === 0){
+				return;
+			}
+			var frameTime = frame.timeDiff > 250 ? 250 : frame.timeDiff;
+			accumulator += frameTime;
+			while( accumulator >= simrate ) {
+				previousState = currentState;
+				currentState = self.step( currentState, simrate );
+				accumulator -= simrate;
+
+				var object = self.isCollision(currentState.position.x, currentState.position.y, self.puck.getRadius());
+				if ( object ) {
+					self.render( currentState, frame.frameRate );
+					self.handleCollision( object );
+					return;
+				}
+
+				if (self.isOffScreen(currentState.position.x, currentState.position.y)) {
+					handleCollision( "screen" );
+				}
+			}
+
+			var alpha = accumulator / frameTime;
+			var state = self.blend(previousState, currentState, alpha);
+
+			//render!
+			self.render( state, frame.frameRate );
+
+		}, self.layer);
 	};
 
 	Simulation.prototype.render = function( state, fps ) {
@@ -292,6 +298,7 @@
 		this.puck.moveTo(100 + this.map.puckPosition.x, this.map.puckPosition.y);
 		this.puck.velocity = EFH.Vector.ZERO;
 		this.layer.draw();
+		this.anim = this.createAnimation();
 	};
 
 	Simulation.prototype.serialize = function() {
