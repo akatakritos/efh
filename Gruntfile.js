@@ -16,6 +16,7 @@ module.exports = function(grunt){
 					'src/efh.physics.js',
 					'src/map.js',
 					'src/simulation.js',
+					'src/game.js',
 					'src/outro.js'
 				],
 				dest: 'dist/efh.js'
