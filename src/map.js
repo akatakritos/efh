@@ -1,4 +1,12 @@
+/**
+ * Represents a Map or Level - the configuration of a puzzle the user must solve
+ * @return {Level}
+ */
 var Level = function() {
+
+	/**
+	 * Set a bunch of defaults
+	 */
 	this.name = 'Level';
 	this.goal = {
 		x: 0,
@@ -13,6 +21,11 @@ var Level = function() {
 	this.height = 0;
 };
 
+/**
+ * Load from a source, calling back when all the level assets are downloaded
+ * @param  {Object}   source   The level data
+ * @param  {Function} callback Called when all assets are loaded
+ */
 Level.load = function( source, callback ) {
 	if ( typeof source === 'string' ) {
 		Level.loadJson( source, callback );
