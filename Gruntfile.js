@@ -5,20 +5,29 @@ module.exports = function(grunt){
 			options: {
 				separator: ';'
 			},
-			dist : {
+			physics : {
+				src: [
+					'src/intro.js',
+					'src/efh.utils.js',
+					'src/puck.js',
+					'src/dragcharge.js',
+					'src/map.js',
+					'src/game.js',
+					'src/outro.js'
+				],
+				dest: 'dist/game.js'
+			},
+			game : {
 				src: [
 					'src/intro.js',
 					'src/efh.utils.js',
 					'src/vector.js',
 					'src/pointcharge.js',
-					'src/puck.js',
-					'src/dragcharge.js',
 					'src/efh.physics.js',
-					'src/map.js',
 					'src/simulation.js',
 					'src/outro.js'
 				],
-				dest: 'dist/efh.js'
+				dest: 'dist/simulation.js'
 			}
 		},
 
@@ -28,7 +37,8 @@ module.exports = function(grunt){
 			},
 			dist: {
 				files: {
-					'dist/efh.min.js': ['<%= concat.dist.dest %>']
+					'dist/game.min.js': ['<%= concat.game.dest %>'],
+					'dist/simulation.min.js' : ['<%= concat.physics.dest %>']
 				}
 			}
 		},
