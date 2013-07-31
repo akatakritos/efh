@@ -7,6 +7,7 @@
 var Game = function( options ) {
 	this.stage = null; //Kinetic.Stage - canvas where rendering takes place
 	this.layer = null; //Kinetic.Layer - container for all interaction objects
+	this.puckLayer = null;
 	this.anim = null;  //Kinetic.Animation - animation class
 	this.puck = null;  //EFH.Puck - represents the moving hockey puck
 	this.map = null;   //EFH.Level - a game configuration
@@ -40,9 +41,10 @@ Game.prototype.init = function( mapSource ) {
 		});
 
 		self.layer = new Kinetic.Layer();
+		self.puckLayer = new Kinetic.Layer();
 
 		self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
-		self.layer.add( self.puck.shape );
+		self.puckLayer.add( self.puck.shape );
 
 		self.goal = new Kinetic.Rect({
 			x: map.goal.x + 100,
@@ -95,9 +97,11 @@ Game.prototype.init = function( mapSource ) {
 		self.map = map;
 
 		self.stage.add( self.layer );
+		self.stage.add( self.puckLayer );
 		self.anim = self.createAnimation();
 
 		self.layer.draw();
+		self.puckLayer.draw();
 	});
 
 	return self;
@@ -127,7 +131,7 @@ Game.prototype.isCollision = function(x, y, radius) {
 	 */
 	var pointsToCheck = 8; //test this many points along the perimeter
 	var angle = 0;         //initial angle
-	var r = radius + 1;    //plus buffer so it doesnt collide with itself
+	var r = radius + 0;    //plus buffer so it doesnt collide with itself
 	for ( var i = 0; i < pointsToCheck; i++) {
 
 		/* Calculate perimeter x and y */
@@ -135,7 +139,7 @@ Game.prototype.isCollision = function(x, y, radius) {
 		var py = y + r * Math.sin(angle);
 
 		/* test for object occupying that point */
-		var obj = this.stage.getIntersection(px, py);
+		var obj = this.layer.getIntersection(px, py);
 
 		/* Make sure theres something there, that its a shape, and that it is
 		 * not the puck (shouldnt report colliding with itself)
@@ -239,6 +243,7 @@ Game.prototype.createAnimation = function() {
 Game.prototype.render = function( state, fps ) {
 	this.puck.velocity = state.velocity;
 	this.puck.moveTo( state.position.x, state.position.y );
+	this.puckLayer.draw();
 	this.debug("FPS: " + fps);
 };
 
