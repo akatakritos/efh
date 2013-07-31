@@ -1,5 +1,5 @@
 var assert = require('assert');
-require('../dist/efh.js');
+require('../dist/simulation.js');
 
 assert.almostEqual = function(a, b, epsilon, message) {
 	if (typeof epsilon === 'undefined') {

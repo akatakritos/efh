@@ -1,3 +1,5 @@
 node_modules
-dist/efh.js
-dist/efh.min.js
+dist/game.js
+dist/game.min.js
+dist/simulation.js
+dist/simulation.min.js

@@ -142,11 +142,11 @@ Game.prototype.createAnimation = function() {
 	var currentState = {
 		position: {x: self.puck.getX(), y: self.puck.getY() },
 		velocity: self.puck.velocity,
-		acceleration: Vector.ZERO,
+		acceleration: EFH.Vector.ZERO,
 		charge : self.puck.charge
 	};
 
-	var simulation = new Simulation( currentState, function( state, frame ) {
+	var simulation = new EFH.Simulation( currentState, function( state, frame ) {
 		self.checkState( state, frame );
 	});
 
