@@ -76,10 +76,10 @@
 			x = this.puck.getX();
 			y = this.puck.getY();
 		}
-		return (x > this.map.x+100 + this.map.width) ||
-			(x < this.map.x) ||
-			(y > this.map.y + this.map.height) ||
-			(y < this.map.y);
+		return (x > 100 + this.map.width) ||
+			(x < 100) ||
+			(y > this.map.height) ||
+			(y < 0);
 	};
 
 	Simulation.prototype.init = function( mapSource ) {
@@ -256,7 +256,10 @@
 	};
 
 	Simulation.prototype.addToPlayingField = function(dragCharge) {
-		this.charges.push(dragCharge.charge);
+		
+		if ( this.charges.indexOf( dragCharge.charge ) === -1 ) {
+			this.charges.push(dragCharge.charge);
+		}
 	};
 
 	Simulation.prototype.removeFromPlayingField = function(dragCharge) {
