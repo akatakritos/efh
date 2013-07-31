@@ -13,7 +13,7 @@ var DragCharge = function(x, y, chargeValue) {
 	var shape = new Kinetic.Image({
 		x: x - DRAGCHARGE_RADIUS,
 		y: y - DRAGCHARGE_RADIUS,
-		image : chargeValue >= 0 ? this.images.positive : this.images.negative,
+		image : chargeValue >= 0 ? Assets.images.positive : Assets.images.negative,
 		draggable: true,
 		name: "draggablepoint"
 	});
@@ -68,19 +68,3 @@ DragCharge.prototype.getY = function() {
 DragCharge.prototype.getRadius = function() {
 	return DRAGCHARGE_RADIUS;
 };
-
-/**
- * Initialize the prototype's images property to have the positive and negative
- * images.
- */
-DragCharge.prototype.images = (function(){
-	if (typeof Image === 'undefined') {
-		return { positive: null, negative: null };
-	}
-	var positive = new Image();
-	var negative = new Image();
-	positive.src = "img/positive.png";
-	negative.src = "img/negative.png";
-
-	return {positive : positive, negative: negative};
-})();

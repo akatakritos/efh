@@ -34,7 +34,10 @@
 				"startingCharges" : [1,-1,1,-1,1,-1]
 			};
 
-			var sim = new EFH.Game({
+
+			var sim = null;
+
+			EFH.createGame({
 				container: 'playground',
 				width: 900,
 				height: 450,
@@ -43,7 +46,10 @@
 					y: 150
 				},
 				mapURL : "img/bg-1.png"
-			}).init( sampleLevel );
+			}, function( game ) {
+				sim = game;
+				sim.init( sampleLevel );
+			});
 
 			// sim.addCharge(25, 25, 1);
 			// sim.addCharge(150, 75, 1);

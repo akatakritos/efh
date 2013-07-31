@@ -9,6 +9,7 @@ module.exports = function(grunt){
 				src: [
 					'src/intro.js',
 					'src/efh.utils.js',
+					'src/assets.js',
 					'src/puck.js',
 					'src/dragcharge.js',
 					'src/map.js',

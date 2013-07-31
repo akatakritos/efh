@@ -341,4 +341,11 @@ Game.prototype.serialize = function() {
 	return this.stage.toJSON();
 };
 
-EFH.Game = Game;
+var createGame = function( options, callback ) {
+	loadAssets(function() {
+		var g = new Game(options);
+		callback( g );
+	});
+};
+
+EFH.createGame = createGame;

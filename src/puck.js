@@ -4,7 +4,7 @@
 		this.shape = new Kinetic.Image({
 			x : x - 20,
 			y : y - 20,
-			image : this.image
+			image : Assets.images.puck
 		});
 	};
 
@@ -25,8 +25,3 @@
 	Puck.prototype.getRadius = function() {
 		return 20;
 	};
-
-	if (typeof Image !== 'undefined') {
-		Puck.prototype.image = new Image();
-		Puck.prototype.image.src = "img/puck.png";
-	}
