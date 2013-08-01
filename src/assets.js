@@ -6,17 +6,17 @@ var loadAssets = (function() {
 	var assetsList = [
 		{
 			name: "puck",
-			source: 'img/puck.png',
+			source: '/img/puck.png',
 			type: 'image'
 		},
 		{
 			name: "positive",
-			source: 'img/positive.png',
+			source: '/img/positive.png',
 			type: 'image'
 		},
 		{
 			name: "negative",
-			source: 'img/negative.png',
+			source: '/img/negative.png',
 			type: 'image'
 		}
 	];
@@ -34,14 +34,17 @@ var loadAssets = (function() {
 		}
 	};
 
-	return function( cb ) {
+	return function( options, cb ) {
+		var opt = options || {};
+		var rootDir = opt.rootDir || '';
+
 		assetsList.forEach(function( asset ) {
 			if (asset.type === 'image') {
 				var img = new Image();
 				img.onload = function() {
 					assetLoaded(asset, img, cb);
 				};
-				img.src = asset.source;
+				img.src = rootDir + asset.source;
 			}
 		});
 	};

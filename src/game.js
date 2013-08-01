@@ -347,7 +347,7 @@ Game.prototype.serialize = function() {
 };
 
 var createGame = function( options, callback ) {
-	loadAssets(function() {
+	loadAssets(options, function() {
 		var g = new Game(options);
 		callback( g );
 	});

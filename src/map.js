@@ -38,6 +38,20 @@ Level.loadObject = function( source, callback ) {
 	var map = new Level();
 	merge(map, source);
 
+	map.height = +map.height;
+	map.width = +map.width;
+	map.goal.x = +map.goal.x;
+	map.goal.y = +map.goal.y;
+	map.goal.width = +map.goal.width;
+	map.goal.height = +map.goal.height;
+	map.puckPosition.x = +map.puckPosition.x;
+	map.puckPosition.y = +map.puckPosition.y;
+	if ( typeof source.startingCharges === 'string' ) {
+		map.startingCharges = source.startingCharges.split(',').map(function(c) {
+			return +c;
+		});
+	}
+
 	if ( source.backgroundUrl ) {
 		map.background.url = source.backgroundUrl;
 		map.background.image = new Image();
