@@ -335,8 +335,9 @@ Game.prototype.addCharge = function(x, y, charge) {
 Game.prototype.reset = function() {
 	this.puck.moveTo(100 + this.map.puckPosition.x, this.map.puckPosition.y);
 	this.puck.velocity = EFH.Vector.ZERO;
-	this.layer.draw();
 	this.anim.simulation.reset();
+	this.layer.draw();
+	this.puckLayer.draw();
 };
 
 /**
