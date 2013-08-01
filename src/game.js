@@ -12,6 +12,11 @@ var Game = function( options ) {
 	this.puck = null;  //EFH.Puck - represents the moving hockey puck
 	this.map = null;   //EFH.Level - a game configuration
 	this.txt = null;   //Kinetic.Text - output for debugging
+	this.events = {
+		"lose" : [],
+		"win" : [],
+		"stop" : []
+	};
 
 	this.options = {
 		container : "efh-simulation",
@@ -257,8 +262,12 @@ Game.prototype.handleCollision = function( shape ) {
 	if (shape !== false) {
 		console.log(shape);
 		if (shape == this.goal) {
-			alert("You win!");
+			this.fire('win');
+		} else {
+			this.fire('lose');
 		}
+	} else {
+		this.fire('lose');
 	}
 };
 
@@ -345,6 +354,24 @@ Game.prototype.reset = function() {
  */
 Game.prototype.serialize = function() {
 	return this.stage.toJSON();
+};
+
+Game.prototype.on = function( event, callback ) {
+	if (this.events.hasOwnProperty(event)) {
+		this.events[event].push(callback);
+		return true;
+	}
+
+	return false;
+};
+
+Game.prototype.fire = function( event ) {
+	if (this.events.hasOwnProperty(event)) {
+		var callbacks = this.events[event];
+		for( var i = 0; i < callbacks.length; i++) {
+			callbacks[i].call(this);
+		}
+	}
 };
 
 var createGame = function( options, callback ) {

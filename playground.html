@@ -49,6 +49,9 @@
 			}, function( game ) {
 				sim = game;
 				sim.init( sampleLevel );
+				sim.on('win', function(){
+					alert('Win!');
+				});
 			});
 
 			// sim.addCharge(25, 25, 1);
