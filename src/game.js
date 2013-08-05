@@ -5,24 +5,31 @@
  * @return {Game}
  */
 var Game = function( options ) {
-	this.stage = null; //Kinetic.Stage - canvas where rendering takes place
-	this.layer = null; //Kinetic.Layer - container for all interaction objects
-	this.puckLayer = null;
-	this.anim = null;  //Kinetic.Animation - animation class
-	this.puck = null;  //EFH.Puck - represents the moving hockey puck
-	this.map = null;   //EFH.Level - a game configuration
-	this.txt = null;   //Kinetic.Text - output for debugging
-	this.events = {
-		"lose" : [],
-		"win" : [],
-		"stop" : []
-	};
 
+	__setBlanks( this );
 	this.options = {
 		container : "efh-simulation",
+		debug: false
 	};
 
 	merge(this.options, options);
+};
+
+var __setBlanks = function( thisObj ) {
+	thisObj.stage = null; //Kinetic.Stage - canvas where rendering takes place
+	thisObj.layer = null; //Kinetic.Layer - container for all interaction objects
+	thisObj.puckLayer = null;
+	thisObj.anim = null;  //Kinetic.Animation - animation class
+	thisObj.puck = null;  //EFH.Puck - represents the moving hockey puck
+	thisObj.map = null;   //EFH.Level - a game configuration
+	thisObj.txt = null;   //Kinetic.Text - output for debugging
+	thisObj.events = {
+		"lose" : [],
+		"win" : [],
+		"stop" : [],
+		"start" : []
+	};
+	thisObj.goal = null;
 };
 
 /**
@@ -32,6 +39,10 @@ var Game = function( options ) {
  */
 Game.prototype.init = function( mapSource ) {
 	var self = this;
+
+	if (self.stage) {
+		self.destroy();
+	}
 
 	/**
 	 * Load the level and its assets, and when complete, start configuring the
@@ -107,6 +118,8 @@ Game.prototype.init = function( mapSource ) {
 
 		self.layer.draw();
 		self.puckLayer.draw();
+
+		self.reset();
 	});
 
 	return self;
@@ -117,7 +130,9 @@ Game.prototype.init = function( mapSource ) {
  * @param  {String} text debugging text to write
  */
 Game.prototype.debug = function(text) {
-	this.txt.setText(text);
+	if (this.options.debug) {
+		this.txt.setText(text);
+	}
 };
 
 /**
@@ -167,6 +182,10 @@ Game.prototype.isCollision = function(x, y, radius) {
  * @param  {Object} frame current frame data
  */
 Game.prototype.checkState = function( state, frame ) {
+
+	if (!this.anim || !this.anim.isRunning()) {
+		return;
+	}
 
 	/* Test for collision with another object */
 	var object = this.isCollision(state.position.x, state.position.y, this.puck.getRadius());
@@ -260,7 +279,6 @@ Game.prototype.render = function( state, fps ) {
 Game.prototype.handleCollision = function( shape ) {
 	this.stop();
 	if (shape !== false) {
-		console.log(shape);
 		if (shape == this.goal) {
 			this.fire('win');
 		} else {
@@ -287,6 +305,7 @@ Game.prototype.addInitialCharges = function( initialCharges ) {
  * Start the animation
  */
 Game.prototype.start = function() {
+	this.fire('start');
 	this.anim.start();
 };
 
@@ -294,6 +313,7 @@ Game.prototype.start = function() {
  * Stop the animation
  */
 Game.prototype.stop = function() {
+	this.fire('stop');
 	this.anim.stop();
 };
 
@@ -303,10 +323,10 @@ Game.prototype.stop = function() {
  */
 Game.prototype.toggle = function() {
 	if(this.anim.isRunning()) {
-		this.anim.stop();
+		this.stop();
 		return false;
 	} else {
-		this.anim.start();
+		this.start();
 		return true;
 	}
 };
@@ -335,6 +355,8 @@ Game.prototype.addCharge = function(x, y, charge) {
 			self.anim.simulation.removeFromPlayingField(this.charge);
 		}
 	};
+
+	return dragCharge;
 };
 
 /**
@@ -353,7 +375,16 @@ Game.prototype.reset = function() {
  * Saves the game state to JSON
  */
 Game.prototype.serialize = function() {
-	return this.stage.toJSON();
+	return this.anim.simulation.serialize();
+};
+
+Game.prototype.deserialize = function(json) {
+	var obj = JSON.parse(json);
+	var self = this;
+	obj.charges.forEach(function(c) {
+		var dc = self.addCharge(c.x, c.y, c.charge);
+		self.anim.simulation.addToPlayingField(dc.charge);
+	});
 };
 
 Game.prototype.on = function( event, callback ) {
@@ -379,6 +410,12 @@ var createGame = function( options, callback ) {
 		var g = new Game(options);
 		callback( g );
 	});
+};
+
+Game.prototype.destroy = function() {
+	this.stage.destroy();
+	this.stage.destroyChildren();
+	__setBlanks( this );
 };
 
 EFH.createGame = createGame;

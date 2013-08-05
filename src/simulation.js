@@ -78,4 +78,10 @@
 		}
 	};
 
+	Simulation.prototype.serialize = function() {
+		return JSON.stringify({
+			charges: this.charges
+		});
+	};
+
 	EFH.Simulation = Simulation;
