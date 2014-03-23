@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Level Editor</title>
+    <script type='text/javascript' src='/lib/jquery-1.11.0.min.js'></script>
+    <script type='text/javascript' src='/lib/drawingboard.js'></script>
+    <script type='text/javascript' src='/dist/kinetic-v5.0.1.min.js'></script>
+    <link rel='stylesheet' href='/lib/drawingboard.min.css'>
+    <script type='text/javascript' src='/dist/editor.js'></script>
+    
+  </head>
+  <body>
+    <div id='editor'></div>
+    <button id='save'>Save</button>
+
+    <input type='text' name='positives' value='5' />
+    <input type='text' name='negatives' value='5' />
+    <span id='goal'></span>
+
+    <script type='text/javascript'>
+
+      $(document).ready(function() {
+
+
+          var editor = new EFH.LevelEditor('editor', {width: 700, height: 400,
+            onGoalMove: function(goal) {
+              $('#goal').html(goal.height + "x" + 
+                goal.width + " @ (" + goal.x + "," + goal.y + ")");
+              }}
+            );
+
+        $('#save').click(function() {
+          editor.editGoal();
+        });
+      });
+  </script>
+  </body>
+</html>
