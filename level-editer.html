@@ -16,22 +16,33 @@
     <input type='text' name='positives' value='5' />
     <input type='text' name='negatives' value='5' />
     <span id='goal'></span>
+    <span id='puck'></span>
+    <button id='serialize'>Serialize</button>
 
     <script type='text/javascript'>
 
       $(document).ready(function() {
 
 
-          var editor = new EFH.LevelEditor('editor', {width: 700, height: 400,
+          var editor = new EFH.LevelEditor('editor', {
+            width: 700,
+            height: 400,
             onGoalMove: function(goal) {
               $('#goal').html(goal.height + "x" + 
                 goal.width + " @ (" + goal.x + "," + goal.y + ")");
-              }}
-            );
+            },
+            onPuckMove: function(puck) {
+              $('#puck').html(puck.x + "," + puck.y);
+            }
+          });
 
         $('#save').click(function() {
           editor.editGoal();
         });
+
+        $('#serialize').click(function() {
+          console.log(editor.getData());
+          });
       });
   </script>
   </body>

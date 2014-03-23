@@ -22,10 +22,10 @@ LevelEditor.prototype.init = function() {
 
   group.on('dragend', function() {
     var goal = this.find('.goal')[0];
-    var height = rect.getHeight(),
-        width = rect.getWidth(),
-        x = rect.parent.getX(),
-        y = rect.parent.getY();
+    var height = goal.getHeight(),
+        width = goal.getWidth(),
+        x = goal.parent.getX(),
+        y = goal.parent.getY();
     if (self._options.onGoalMove) {
       self._options.onGoalMove({x: x, y: y, width: width, height: height});
     }
@@ -33,18 +33,21 @@ LevelEditor.prototype.init = function() {
 
   layer.add(group);
   stage.add(layer);
-  var rect = new Kinetic.Rect({width: 100, height: 100, fill: 'green', name: 'goal'});
-  group.add(rect);
+  var goal = new Kinetic.Rect({width: 100, height: 100, fill: 'green', name: 'goal'});
+  group.add(goal);
   this.addAnchor(group, 0, 0, 'topLeft');
   this.addAnchor(group, 100, 0, 'topRight');
   this.addAnchor(group, 100, 100, 'bottomRight');
   this.addAnchor(group, 0, 100, 'bottomLeft');
+
+  this.addPuck(layer);
 
   this._board = board;
   this._kinetic = kinetic;
   this._layer = layer;
   this._group = group;
   this._stage = stage;
+  this._goal = goal;
 
   setTimeout(function() {
     self._drawingBoard = new DrawingBoard.Board(board.id);
@@ -167,20 +170,74 @@ LevelEditor.prototype.editGoal = function() {
     var img = new Kinetic.Image({
       x: 0,
       y: 0,
-      width: 700,
-      height: 400,
+      width: self._options.width,
+      height: self._options.height,
       image: imgObject
     });
 
 
     self._layer.add(img);
     self._group.moveToTop();
+    self._puck.moveToTop();
     self._stage.draw();
 
     self._board.style.display = 'none';
     self._kinetic.style.display = 'block';
   };
 
-  imgObject.src = this._drawingBoard.getImg();
+  this._background = this._drawingBoard.getImg();
+  imgObject.src = this._background;
+};
+
+LevelEditor.prototype.addPuck = function(layer) {
+  var self = this,
+      img = new Image();
+
+  img.onload = function() {
+    var image = new Kinetic.Image({
+      x: 100,
+      y: 100,
+      width: 40,
+      height: 40,
+      image: img,
+      draggable: true
+    });
+
+    image.on('dragend', function() {
+      if (self._options.onPuckMove) {
+        self._options.onPuckMove({
+          x: image.getX() + 20,
+          y: image.getY() + 20
+        });
+      }
+    });
+
+    self._puck = image;
+    layer.add(image);
+    image.moveToTop();
+    layer.draw();
+  };
+
+  img.src = "/img/puck.png";
+};
+
+LevelEditor.prototype.goal = function () {
+  return {
+    x: this._goal.parent.getX(),
+    y: this._goal.parent.getY(),
+    width: this._goal.getWidth(),
+    height: this._goal.getHeight()
+  };
+};
+
+LevelEditor.prototype.getData = function() {
+  return {
+    background: this._background,
+    puck: {
+      x: this._puck.getX() + 20,
+      y: this._puck.getY() + 20
+    },
+    goal: this.goal()
+  };
 };
 
