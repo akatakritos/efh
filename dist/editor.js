@@ -1,6 +1,17 @@
 var EFH = window.EFH || {};
 window.EFH = EFH;
 
+Kinetic.Group.prototype.find = function(pattern) {
+  if (pattern[0] === '.') {
+    var name = pattern.substring(1);
+    return this.children.filter(function(c) {
+      return c.getName() == name;
+    });
+  } else {
+    return [];
+  }
+};
+
 EFH.LevelEditor = LevelEditor = function(container, options) {
   this._options = options;
   this._options.container = container;
@@ -50,7 +61,9 @@ LevelEditor.prototype.init = function() {
   this._goal = goal;
 
   setTimeout(function() {
-    self._drawingBoard = new DrawingBoard.Board(board.id);
+    self._drawingBoard = new DrawingBoard.Board(board.id, {
+      background: false
+    });
   }, 0);
 };
 
@@ -85,33 +98,33 @@ LevelEditor.prototype.update = function(activeAnchor) {
   var bottomLeft = group.find('.bottomLeft')[0];
   var goal = group.find('.goal')[0];
 
-  var anchorX = activeAnchor.x();
-  var anchorY = activeAnchor.y();
+  var anchorX = activeAnchor.getX();
+  var anchorY = activeAnchor.getY();
 
   // update anchor positions
-  switch (activeAnchor.name()) {
+  switch (activeAnchor.getName()) {
     case 'topLeft':
-      topRight.y(anchorY);
-      bottomLeft.x(anchorX);
+      topRight.setY(anchorY);
+      bottomLeft.setX(anchorX);
       break;
     case 'topRight':
-      topLeft.y(anchorY);
-      bottomRight.x(anchorX);
+      topLeft.setY(anchorY);
+      bottomRight.setX(anchorX);
       break;
     case 'bottomRight':
-      bottomLeft.y(anchorY);
-      topRight.x(anchorX); 
+      bottomLeft.setY(anchorY);
+      topRight.setX(anchorX); 
       break;
     case 'bottomLeft':
-      bottomRight.y(anchorY);
-      topLeft.x(anchorX); 
+      bottomRight.setY(anchorY);
+      topLeft.setX(anchorX); 
       break;
   }
 
   goal.setPosition(topLeft.getPosition());
 
-  var width = topRight.x() - topLeft.x();
-  var height = bottomLeft.y() - topLeft.y();
+  var width = topRight.getX() - topLeft.getX();
+  var height = bottomLeft.getY() - topLeft.getY();
   if(width && height) {
     goal.setSize({width:width, height: height});
   }
@@ -232,8 +245,10 @@ LevelEditor.prototype.goal = function () {
 
 LevelEditor.prototype.getData = function() {
   return {
-    background: this._background,
-    puck: {
+    backgroundUrl: this._background,
+    width: this._options.width,
+    height: this._options.height,
+    puckPosition: {
       x: this._puck.getX() + 20,
       y: this._puck.getY() + 20
     },
