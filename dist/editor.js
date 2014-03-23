@@ -12,7 +12,7 @@ LevelEditor.prototype.init = function() {
   var container = document.getElementById(this._options.container);
   var board = this.createDrawingBoardElement(container);
   var kinetic = this.createKineticElement(container);
-  var stage = new Kinetic.Stage({ container: kinetic.id, width:700, height:365 });
+  var stage = new Kinetic.Stage({ container: kinetic.id, width:this._options.width, height:this._options.height });
   var layer = new Kinetic.Layer();
   var group = new Kinetic.Group({
     x: this._options.width / 2 - 50,
