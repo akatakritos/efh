@@ -6,31 +6,31 @@
  */
 var Game = function( options ) {
 
-	__setBlanks( this );
-	this.options = {
-		container : "efh-simulation",
-		debug: false
-	};
+  __setBlanks( this );
+  this.options = {
+    container : "efh-simulation",
+    debug: false
+  };
 
-	merge(this.options, options);
+  merge(this.options, options);
 };
 
 var __setBlanks = function( thisObj ) {
-	thisObj.stage = null; //Kinetic.Stage - canvas where rendering takes place
-	thisObj.layer = null; //Kinetic.Layer - container for all interaction objects
-	thisObj.puckLayer = null;
-	thisObj.anim = null;  //Kinetic.Animation - animation class
-	thisObj.puck = null;  //EFH.Puck - represents the moving hockey puck
-	thisObj.map = null;   //EFH.Level - a game configuration
-	thisObj.txt = null;   //Kinetic.Text - output for debugging
-	thisObj.events = {
-		"lose" : [],
-		"win" : [],
-		"stop" : [],
-		"start" : []
-	};
-	thisObj.goal = null;
-	thisObj.dragCharges = [];
+  thisObj.stage = null; //Kinetic.Stage - canvas where rendering takes place
+  thisObj.layer = null; //Kinetic.Layer - container for all interaction objects
+  thisObj.puckLayer = null;
+  thisObj.anim = null;  //Kinetic.Animation - animation class
+  thisObj.puck = null;  //EFH.Puck - represents the moving hockey puck
+  thisObj.map = null;   //EFH.Level - a game configuration
+  thisObj.txt = null;   //Kinetic.Text - output for debugging
+  thisObj.events = {
+    "lose" : [],
+    "win" : [],
+    "stop" : [],
+    "start" : []
+  };
+  thisObj.goal = null;
+  thisObj.dragCharges = [];
 };
 
 /**
@@ -39,91 +39,91 @@ var __setBlanks = function( thisObj ) {
  * @return {chain}
  */
 Game.prototype.init = function( mapSource ) {
-	var self = this;
+  var self = this;
 
-	if (self.stage) {
-		self.destroy();
-	}
+  if (self.stage) {
+    self.destroy();
+  }
 
-	/**
-	 * Load the level and its assets, and when complete, start configuring the
-	 * environment
-	 */
-	Level.load( mapSource, function(map) {
+  /**
+   * Load the level and its assets, and when complete, start configuring the
+   * environment
+   */
+  Level.load( mapSource, function(map) {
 
-		self.stage = new Kinetic.Stage( {
-			width: map.width + 100,
-			height: map.height,
-			container: self.options.container
-		});
+    self.stage = new Kinetic.Stage( {
+      width: map.width + 100,
+      height: map.height,
+      container: self.options.container
+    });
 
-		self.layer = new Kinetic.Layer();
-		self.puckLayer = new Kinetic.Layer();
+    self.layer = new Kinetic.Layer();
+    self.puckLayer = new Kinetic.Layer();
 
-		self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
-		self.puckLayer.add( self.puck.shape );
+    self.puck = new Puck(100+map.puckPosition.x, map.puckPosition.y);
+    self.puckLayer.add( self.puck.shape );
 
-		self.goal = new Kinetic.Rect({
-			x: map.goal.x + 100,
-			y: map.goal.y,
-			width: map.goal.width,
-			height: map.goal.height,
-			fill: 'green'
-		});
-		self.layer.add( self.goal );
+    self.goal = new Kinetic.Rect({
+      x: map.goal.x + 100,
+      y: map.goal.y,
+      width: map.goal.width,
+      height: map.goal.height,
+      fill: 'green'
+    });
+    self.layer.add( self.goal );
 
-		self.txt = new Kinetic.Text({
-			x: self.stage.getWidth() - 200,
-			y: 15,
-			text: '',
-			fontSize: 10,
-			fontFamily: 'Calibri',
-			fill: 'green'
-		});
-		self.layer.add( self.txt );
+    self.txt = new Kinetic.Text({
+      x: self.stage.getWidth() - 200,
+      y: 15,
+      text: '',
+      fontSize: 10,
+      fontFamily: 'Calibri',
+      fill: 'green'
+    });
+    self.layer.add( self.txt );
 
-		var bx = 100,
-			by = 0,
-			bw = map.width,
-			bh = map.height;
-		var border = new Kinetic.Line({
-			points: [bx, by, bx + bw, by, bx + bw, by + bh, bx, by + bh, bx, by],
-			stroke: 'black',
-			strokeWidth: 2
-		});
-		self.layer.add( border );
+    var bx = 100,
+      by = 0,
+      bw = map.width,
+      bh = map.height;
+    var border = new Kinetic.Line({
+      points: [bx, by, bx + bw, by, bx + bw, by + bh, bx, by + bh, bx, by],
+      stroke: 'black',
+      strokeWidth: 2
+    });
+    self.layer.add( border );
 
-		self.addInitialCharges(map.startingCharges);
+    self.addInitialCharges(map.startingCharges);
 
-		/* Load background image */
-		if (map.background.image) {
-			var bg = new Kinetic.Image({
-				image: map.background.image,
-				x: bx, y: by,
-				width: bw, height: bh
-			});
+    /* Load background image */
+    if (map.background.image) {
+      var bg = new Kinetic.Image({
+        image: map.background.image,
+        x: bx, y: by,
+        width: bw, height: bh
+      });
 
-			self.layer.add( bg );
-			bg.moveToBottom();
+      self.layer.add( bg );
+      bg.moveToBottom();
 
-			bg.createImageHitRegion(function() {
-				self.layer.draw();
-			});
-		}
+      bg.createImageHitRegion(function() {
+        self.layer.draw();
+      });
+    }
 
-		self.map = map;
+    self.map = map;
 
-		self.stage.add( self.layer );
-		self.stage.add( self.puckLayer );
-		self.anim = self.createAnimation();
+    self.stage.add( self.layer );
+    self.stage.add( self.puckLayer );
+    self.anim = self.createAnimation();
 
-		self.layer.draw();
-		self.puckLayer.draw();
+    self.layer.draw();
+    self.puckLayer.draw();
 
-		self.reset();
-	});
+    self.reset();
+  });
 
-	return self;
+  return self;
 };
 
 /**
@@ -131,9 +131,9 @@ Game.prototype.init = function( mapSource ) {
  * @param  {String} text debugging text to write
  */
 Game.prototype.debug = function(text) {
-	if (this.options.debug) {
-		this.txt.setText(text);
-	}
+  if (this.options.debug) {
+    this.txt.setText(text);
+  }
 };
 
 /**
@@ -146,34 +146,34 @@ Game.prototype.debug = function(text) {
  */
 Game.prototype.isCollision = function(x, y, radius) {
 
-	/**
-	 * Using the x and y as the center, check a number of points around the
-	 * permiter of the circle for a possible collision
-	 */
-	var pointsToCheck = 8; //test this many points along the perimeter
-	var angle = 0;         //initial angle
-	var r = radius + 0;    //plus buffer so it doesnt collide with itself
-	for ( var i = 0; i < pointsToCheck; i++) {
+  /**
+   * Using the x and y as the center, check a number of points around the
+   * permiter of the circle for a possible collision
+   */
+  var pointsToCheck = 8; //test this many points along the perimeter
+  var angle = 0;         //initial angle
+  var r = radius + 0;    //plus buffer so it doesnt collide with itself
+  for ( var i = 0; i < pointsToCheck; i++) {
 
-		/* Calculate perimeter x and y */
-		var px = x + r * Math.cos(angle);
-		var py = y + r * Math.sin(angle);
+    /* Calculate perimeter x and y */
+    var px = x + r * Math.cos(angle);
+    var py = y + r * Math.sin(angle);
 
-		/* test for object occupying that point */
-		var obj = this.layer.getIntersection(px, py);
+    /* test for object occupying that point */
+    var obj = this.layer.getIntersection(px, py);
 
-		/* Make sure theres something there, that its a shape, and that it is
-		 * not the puck (shouldnt report colliding with itself)
-		 */
-		if (obj && obj.shape && obj.shape !== this.puck.shape) {
-			return obj.shape;
-		}
+    /* Make sure theres something there, that its a shape, and that it is
+     * not the puck (shouldnt report colliding with itself)
+     */
+    if (obj && obj.shape && obj.shape !== this.puck.shape) {
+      return obj.shape;
+    }
 
-		/* Calculate the next point along the perimeter */
-		angle += (2*Math.PI) / pointsToCheck;
-	}
+    /* Calculate the next point along the perimeter */
+    angle += (2*Math.PI) / pointsToCheck;
+  }
 
-	return false;
+  return false;
 };
 
 /**
@@ -184,22 +184,22 @@ Game.prototype.isCollision = function(x, y, radius) {
  */
 Game.prototype.checkState = function( state, frame ) {
 
-	if (!this.anim || !this.anim.isRunning()) {
-		return;
-	}
+  if (!this.anim || !this.anim.isRunning()) {
+    return;
+  }
 
-	/* Test for collision with another object */
-	var object = this.isCollision(state.position.x, state.position.y, this.puck.getRadius());
-	if ( object ) {
-		this.render( state, frame.frameRate );
-		this.handleCollision( object );
-		return;
-	}
+  /* Test for collision with another object */
+  var object = this.isCollision(state.position.x, state.position.y, this.puck.getRadius());
+  if ( object ) {
+    this.render( state, frame.frameRate );
+    this.handleCollision( object );
+    return;
+  }
 
-	/* test if object got off the screen */
-	if (this.isOffScreen(state.position.x, state.position.y)) {
-		this.handleCollision( "screen" );
-	}
+  /* test if object got off the screen */
+  if (this.isOffScreen(state.position.x, state.position.y)) {
+    this.handleCollision( "screen" );
+  }
 };
 
 /**
@@ -209,10 +209,10 @@ Game.prototype.checkState = function( state, frame ) {
  * @return {Boolean}   true if off screen
  */
 Game.prototype.isOffScreen = function(x, y) {
-	return (x > 100 + this.map.width) ||
-		(x < 100) ||
-		(y > this.map.height) ||
-		(y < 0);
+  return (x > 100 + this.map.width) ||
+    (x < 100) ||
+    (y > this.map.height) ||
+    (y < 0);
 };
 
 /**
@@ -221,43 +221,43 @@ Game.prototype.isOffScreen = function(x, y) {
  * @return {Kinetic.Animation}
  */
 Game.prototype.createAnimation = function() {
-	var self = this;
-	var currentState = {
-		position: {x: self.puck.getX(), y: self.puck.getY() },
-		velocity: self.puck.velocity,
-		acceleration: EFH.Vector.ZERO,
-		charge : self.puck.charge
-	};
+  var self = this;
+  var currentState = {
+    position: {x: self.puck.getX(), y: self.puck.getY() },
+    velocity: self.puck.velocity,
+    acceleration: EFH.Vector.ZERO,
+    charge : self.puck.charge
+  };
 
-	var simulation = new EFH.Simulation( currentState, function( state, frame ) {
-		/*
-		 * This callback is called for each step of the simulation, which
-		 * may not be the same as each frame
-		 */
-		self.checkState( state, frame );
-	});
+  var simulation = new EFH.Simulation( currentState, function( state, frame ) {
+    /*
+     * This callback is called for each step of the simulation, which
+     * may not be the same as each frame
+     */
+    self.checkState( state, frame );
+  });
 
-	var a =  new Kinetic.Animation(function(frame) {
-		if (frame.timeDiff === 0){
-			return;
-		}
+  var a =  new Kinetic.Animation(function(frame) {
+    if (frame.timeDiff === 0){
+      return;
+    }
 
-		/*
-		 * Calculate the state for right now. Doing so may involve more than one
-		 * step in the simulation. Checking the state of the simulation for out
-		 * of bounds, collisions, end of game, etc is done in the callback 
-		 * configured for the EFH.Simulation constructor
-		 */
-		var state = simulation.handleFrameRequest( frame );
+    /*
+     * Calculate the state for right now. Doing so may involve more than one
+     * step in the simulation. Checking the state of the simulation for out
+     * of bounds, collisions, end of game, etc is done in the callback 
+     * configured for the EFH.Simulation constructor
+     */
+    var state = simulation.handleFrameRequest( frame );
 
-		self.render( state, frame.frameRate );
+    self.render( state, frame.frameRate );
 
-	}, self.layer);
+  }, self.layer);
 
-	/* Attach the simulation object on so we can access it later */
-	a.simulation = simulation;
+  /* Attach the simulation object on so we can access it later */
+  a.simulation = simulation;
 
-	return a;
+  return a;
 };
 
 /**
@@ -266,10 +266,10 @@ Game.prototype.createAnimation = function() {
  * @param  {Number} fps   frames per second
  */
 Game.prototype.render = function( state, fps ) {
-	this.puck.velocity = state.velocity;
-	this.puck.moveTo( state.position.x, state.position.y );
-	this.puckLayer.draw();
-	this.debug("FPS: " + fps);
+  this.puck.velocity = state.velocity;
+  this.puck.moveTo( state.position.x, state.position.y );
+  this.puckLayer.draw();
+  this.debug("FPS: " + fps);
 };
 
 /**
@@ -278,16 +278,16 @@ Game.prototype.render = function( state, fps ) {
  * @param  {Object} shape The shape with which the puck collided
  */
 Game.prototype.handleCollision = function( shape ) {
-	this.stop();
-	if (shape !== false) {
-		if (shape == this.goal) {
-			this.fire('win');
-		} else {
-			this.fire('lose');
-		}
-	} else {
-		this.fire('lose');
-	}
+  this.stop();
+  if (shape !== false) {
+    if (shape == this.goal) {
+      this.fire('win');
+    } else {
+      this.fire('lose');
+    }
+  } else {
+    this.fire('lose');
+  }
 };
 
 /**
@@ -295,33 +295,33 @@ Game.prototype.handleCollision = function( shape ) {
  * @param  {Array} initialCharges array of charge values
  */
 Game.prototype.addInitialCharges = function( initialCharges ) {
-	var x = 25, y = 25;
-	for (var i = 0; i < initialCharges.length; i++) {
-		this.addCharge(x, y, initialCharges[i]);
-		y+=20;
-	}
+  var x = 25, y = 25;
+  for (var i = 0; i < initialCharges.length; i++) {
+    this.addCharge(x, y, initialCharges[i]);
+    y+=20;
+  }
 };
 
 /**
  * Start the animation
  */
 Game.prototype.start = function() {
-	this.fire('start');
-	this.dragCharges.forEach(function(dc) {
-		dc.shape.setDraggable(false);
-	});
-	this.anim.start();
+  this.fire('start');
+  this.dragCharges.forEach(function(dc) {
+    dc.shape.setDraggable(false);
+  });
+  this.anim.start();
 };
 
 /**
  * Stop the animation
  */
 Game.prototype.stop = function() {
-	this.fire('stop');
-	this.dragCharges.forEach(function(dc) {
-		dc.shape.setDraggable(true);
-	});
-	this.anim.stop();
+  this.fire('stop');
+  this.dragCharges.forEach(function(dc) {
+    dc.shape.setDraggable(true);
+  });
+  this.anim.stop();
 };
 
 /**
@@ -329,13 +329,13 @@ Game.prototype.stop = function() {
  * @return {Boolean} true if the simulation is running after the toggle
  */
 Game.prototype.toggle = function() {
-	if(this.anim.isRunning()) {
-		this.stop();
-		return false;
-	} else {
-		this.start();
-		return true;
-	}
+  if(this.anim.isRunning()) {
+    this.stop();
+    return false;
+  } else {
+    this.start();
+    return true;
+  }
 };
 
 /**
@@ -345,26 +345,26 @@ Game.prototype.toggle = function() {
  * @param  {Number} charge charge value
  */
 Game.prototype.addCharge = function(x, y, charge) {
-	var dragCharge = new DragCharge(x, y, charge);
-	this.layer.add(dragCharge.shape);
-	this.layer.draw();
+  var dragCharge = new DragCharge(x, y, charge);
+  this.layer.add(dragCharge.shape);
+  this.layer.draw();
 
-	var self = this;
+  var self = this;
 
-	/**
-	 * Set up callbacks so we can add or remove the charge from the 
-	 * simulation
-	 */
-	dragCharge.onDragEnd = function() {
-		if (! self.isOffScreen(this.getX(), this.getY())) {
-			self.anim.simulation.addToPlayingField(this.charge);
-		} else {
-			self.anim.simulation.removeFromPlayingField(this.charge);
-		}
-	};
+  /**
+   * Set up callbacks so we can add or remove the charge from the 
+   * simulation
+   */
+  dragCharge.onDragEnd = function() {
+    if (! self.isOffScreen(this.getX(), this.getY())) {
+      self.anim.simulation.addToPlayingField(this.charge);
+    } else {
+      self.anim.simulation.removeFromPlayingField(this.charge);
+    }
+  };
 
-	this.dragCharges.push( dragCharge );
-	return dragCharge;
+  this.dragCharges.push( dragCharge );
+  return dragCharge;
 };
 
 /**
@@ -372,58 +372,58 @@ Game.prototype.addCharge = function(x, y, charge) {
  * remove any charges placed by the user
  */
 Game.prototype.reset = function() {
-	this.puck.moveTo(100 + this.map.puckPosition.x, this.map.puckPosition.y);
-	this.puck.velocity = EFH.Vector.ZERO;
-	this.anim.simulation.reset();
-	this.layer.draw();
-	this.puckLayer.draw();
+  this.puck.moveTo(100 + this.map.puckPosition.x, this.map.puckPosition.y);
+  this.puck.velocity = EFH.Vector.ZERO;
+  this.anim.simulation.reset();
+  this.layer.draw();
+  this.puckLayer.draw();
 };
 
 /**
  * Saves the game state to JSON
  */
 Game.prototype.serialize = function() {
-	return this.anim.simulation.serialize();
+  return this.anim.simulation.serialize();
 };
 
 Game.prototype.deserialize = function(json) {
-	var obj = JSON.parse(json);
-	var self = this;
-	obj.charges.forEach(function(c) {
-		var dc = self.addCharge(c.x, c.y, c.charge);
-		self.anim.simulation.addToPlayingField(dc.charge);
-	});
+  var obj = JSON.parse(json);
+  var self = this;
+  obj.charges.forEach(function(c) {
+    var dc = self.addCharge(c.x, c.y, c.charge);
+    self.anim.simulation.addToPlayingField(dc.charge);
+  });
 };
 
 Game.prototype.on = function( event, callback ) {
-	if (this.events.hasOwnProperty(event)) {
-		this.events[event].push(callback);
-		return true;
-	}
+  if (this.events.hasOwnProperty(event)) {
+    this.events[event].push(callback);
+    return true;
+  }
 
-	return false;
+  return false;
 };
 
 Game.prototype.fire = function( event ) {
-	if (this.events.hasOwnProperty(event)) {
-		var callbacks = this.events[event];
-		for( var i = 0; i < callbacks.length; i++) {
-			callbacks[i].call(this);
-		}
-	}
+  if (this.events.hasOwnProperty(event)) {
+    var callbacks = this.events[event];
+    for( var i = 0; i < callbacks.length; i++) {
+      callbacks[i].call(this);
+    }
+  }
 };
 
 var createGame = function( options, callback ) {
-	loadAssets(options, function() {
-		var g = new Game(options);
-		callback( g );
-	});
+  loadAssets(options, function() {
+    var g = new Game(options);
+    callback( g );
+  });
 };
 
 Game.prototype.destroy = function() {
-	this.stage.destroy();
-	this.stage.destroyChildren();
-	__setBlanks( this );
+  this.stage.destroy();
+  this.stage.destroyChildren();
+  __setBlanks( this );
 };
 
 EFH.createGame = createGame;
