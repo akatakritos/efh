@@ -62,7 +62,8 @@ LevelEditor.prototype.init = function() {
 
   setTimeout(function() {
     self._drawingBoard = new DrawingBoard.Board(board.id, {
-      background: false
+      background: false,
+      webStorage: false
     });
   }, 0);
 };
@@ -84,7 +85,7 @@ LevelEditor.prototype.createDrawingBoardElement = function(container) {
   var board = document.createElement('div');
   board.id = 'drawingboard';
   board.setAttribute('style', "width:" + this._options.width + "px; height:" +
-      this._options.height + "px");
+      (this._options.height + 35) + "px");
   container.appendChild(board);
   return board;
 };
@@ -202,6 +203,11 @@ LevelEditor.prototype.editGoal = function() {
   imgObject.src = this._background;
 };
 
+LevelEditor.prototype.draw = function() {
+  this._board.style.display = 'block';
+  this._kinetic.style.display = 'none';
+};
+
 LevelEditor.prototype.addPuck = function(layer) {
   var self = this,
       img = new Image();
@@ -236,8 +242,8 @@ LevelEditor.prototype.addPuck = function(layer) {
 
 LevelEditor.prototype.goal = function () {
   return {
-    x: this._goal.parent.getX(),
-    y: this._goal.parent.getY(),
+    x: this._goal.parent.getX() + this._goal.getX(),
+    y: this._goal.parent.getY() + this._goal.getY(),
     width: this._goal.getWidth(),
     height: this._goal.getHeight()
   };

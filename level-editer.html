@@ -26,7 +26,9 @@
 
     <script type='text/javascript'>
 
-var sim;
+      var step = 1;
+
+      var sim;
       $(document).ready(function() {
 
           $('#game').hide();
@@ -50,11 +52,6 @@ var sim;
 
         EFH.createGame({container: 'game'}, function(game) {
             sim = game;
-
-            sim.on('lose', function() {
-              console.log('lost');
-              });
-
         });
 
         $('#test').click(function() {
