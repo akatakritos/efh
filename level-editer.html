@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Level Editor</title>
+    <script type='text/javascript' src='/lib/jquery-1.11.0.min.js'></script>
+    <script type='text/javascript' src='/lib/drawingboard.js'></script>
+    <script type='text/javascript' src='/dist/kinetic-v4.5.4.min.js'></script>
+    <link rel='stylesheet' href='/lib/drawingboard.min.css'>
+    <script type='text/javascript' src='/dist/editor.js'></script>
+    <script type='text/javascript' src='dist/simulation.js'></script>
+		<script type='text/javascript' src='dist/game.js'></script>
+    
+  </head>
+  <body>
+    <div id='editor'></div>
+    <div id='game'></div>
+    <button id='save'>Save</button>
+
+    <input type='text' name='positives' value='5' />
+    <input type='text' name='negatives' value='5' />
+    <span id='goal'></span>
+    <span id='puck'></span>
+    <button id='test'>Test</button>
+    <button id='toggle' onclick='sim.toggle()'>Toggle</button>
+    <button id='reset' onclick='sim.reset()'>Reset</button>
+
+    <script type='text/javascript'>
+
+      var step = 1;
+
+      var sim;
+      $(document).ready(function() {
+
+          $('#game').hide();
+
+
+          var editor = new EFH.LevelEditor('editor', {
+            width: 700,
+            height: 400,
+            onGoalMove: function(goal) {
+              $('#goal').html(goal.height + "x" + 
+                goal.width + " @ (" + goal.x + "," + goal.y + ")");
+            },
+            onPuckMove: function(puck) {
+              $('#puck').html(puck.x + "," + puck.y);
+            }
+          });
+
+        $('#save').click(function() {
+          editor.editGoal();
+        });
+
+        EFH.createGame({container: 'game'}, function(game) {
+            sim = game;
+        });
+
+        $('#test').click(function() {
+          var gameData = editor.getData();
+          gameData.fixedCharges = [];
+
+          var positives = $('input[name="positives"]').val();
+          var negatives = $('input[name="negatives"]').val();
+          gameData.startingCharges = [];
+
+          for (var i = 0; i < positives; i++) {
+            gameData.startingCharges.push(1);
+            }
+
+            for (var i = 0; i < negatives; i++) {
+            gameData.startingCharges.push(-1);
+            }
+
+          sim.init(gameData);
+
+          $('#editor').hide();
+          $('#game').show();
+        });
+      });
+  </script>
+  </body>
+</html>
