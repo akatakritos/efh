@@ -63,7 +63,21 @@ LevelEditor.prototype.init = function() {
   setTimeout(function() {
     self._drawingBoard = new DrawingBoard.Board(board.id, {
       background: false,
-      webStorage: false
+      webStorage: false,
+      size: 5,
+      controls: [
+        "Color",
+        "DrawingMode",
+        {
+          Size: {
+            range: {
+              min: 5,
+              max: 50
+            }
+          }
+        },
+      "Navigation"
+      ]
     });
   }, 0);
 };
